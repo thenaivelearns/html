@@ -1,0 +1,76 @@
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>抖音蓝线挑战</title>
+	<style>
+		*{margin: 0; padding: 0;}
+		body,html{overflow: hidden}
+		section{
+			display: flex;
+			width: 100%;
+			height: 100%;
+			flex-direction: row;
+		}
+		video{width:50%; background-color: #eee}
+		canvas{
+            width: 50%;
+		}
+	</style>
+</head>
+<body>
+	<section>
+		<canvas></canvas>
+		<video id='vd'></video>
+	</section>
+	
+	<script>
+		(function(){
+			var cs = document.querySelector('canvas')
+			var ctx = cs.getContext('2d')
+			var vd = document.getElementById('vd')
+			var req;
+
+			var heightstep = 0;
+			cs.width = window.innerWidth/2
+			cs.height = window.innerHeight
+			async function start(){
+				let constraints = {video:true}
+				let stream = await navigator.mediaDevices.getUserMedia(constraints)
+				vd.srcObject = stream
+				vd.addEventListener('loadeddata', function(){
+					vd.play();
+					cs.width = vd.videoWidth;
+					cs.height = vd.videoHeight;
+					draw()
+				})
+				
+			}
+
+		 	function draw(){
+		 		if(heightstep >= cs.height-1){
+		 			cancelAnimationFrame(req);
+		 			return;
+		 		}
+		 		heightstep++;
+		 		let _h = heightstep % vd.videoHeight;
+		 		ctx.drawImage(vd,0,_h,vd.videoWidth,_h+1, 0, _h, cs.width, _h+1);
+		 		ctx.drawImage(vd,0,_h+1, vd.videoWidth, vd.videoHeight, 0, _h+1, cs.width, cs.height);
+
+		 		ctx.strokeStyle ="#0c0"
+		 		ctx.beginPath()
+		 		ctx.moveTo(0,_h+2)
+		 		ctx.lineTo(cs.width, _h+2);
+		 		ctx.closePath();
+		 		ctx.stroke();
+		 		req = requestAnimationFrame(draw)
+
+		 	}
+
+			start();
+
+		})()
+	</script>
+</body>
+</html>

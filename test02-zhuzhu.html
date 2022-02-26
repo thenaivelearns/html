@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>你是猪猪吗？</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        ul,
+        li,
+        ol,
+        dl,
+        dd,
+        p,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            display: block;
+            border: none;
+        }
+
+        ol,
+        ul {
+            list-style: none;
+        }
+
+        .clearfix:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        .fr {
+            float: right;
+        }
+
+        html {
+            height: 100%;
+            background: -webkit-radial-gradient(center, #153170, #000);
+        }
+
+        .heart {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 200px auto;
+            transform: rotate(45deg);
+            animation: move 2s infinite alternate;
+        }
+
+        .heart div {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: red;
+        }
+
+        .heart .middle {
+            right: 0;
+            bottom: 0;
+            width: 200px;
+            height: 200px;
+        }
+
+        .heart .left {
+            left: 0;
+            bottom: 0;
+            border-radius: 50%;
+        }
+
+        .heart .right {
+            top: 0;
+            right: 0;
+            border-radius: 50%;
+        }
+
+        .heart p {
+            width: 200px;
+            height: 30px;
+            font: bold 25px/30px "";
+            text-align: center;
+            color: #fff;
+        }
+
+        .heart p {
+            position: absolute;
+            right: 0;
+            bottom: 85px;
+            transform: rotate(-45deg);
+        }
+
+        @-webkit-keyframes move {
+            10% {
+                transform: rotate(45deg) scale(1.1);
+                text-shadow: 0 0 5px #fff;
+            }
+            20% {
+                transform: rotate(45deg) scale(1.2);
+                text-shadow: 0 0 5px #fff;
+            }
+            30% {
+                transform: rotate(45deg) scale(1.3);
+                text-shadow: 0 0 5px #fff;
+            }
+            40% {
+                transform: rotate(45deg) scale(1.2);
+                text-shadow: 0 0 5px #fff;
+            }
+            50% {
+                transform: rotate(45deg) scale(1.3);
+                text-shadow: 0 0 5px #fff;
+            }
+            60% {
+                transform: rotate(45deg) scale(1.2);
+                text-shadow: 0 0 5px #fff;
+            }
+            70% {
+                transform: rotate(45deg) scale(1.3);
+                text-shadow: 0 0 5px #fff;
+            }
+            80% {
+                transform: rotate(45deg) scale(1.2);
+                text-shadow: 0 0 10px #fff;
+            }
+            90% {
+                transform: rotate(45deg) scale(1.1);
+                text-shadow: 0 0 5px #fff;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="heart">
+        <div class="left"></div>
+        <div class="middle"></div>
+        <div class="right"></div>
+        <p>HAHAHAHAHA！</p>
+    </div>
+    <script type="text/javascript">
+        function lv() {
+            var msg = "你是猪猪吗？\n\n快回答！";
+            if (confirm(msg) == true) {
+                var i = prompt("你叫什么名字？", name);
+
+                if (i == null || i == '') {
+                    alert('小调皮鬼，不许不输名字哦！');
+                    lv();
+                } else if (i !== '徐靓颀') {
+                    alert('你不叫' + i + '啊，请重新输入！');
+                    lv();
+                } else if (i === '徐靓颀') {
+                    alert('原来' + i + '真的是猪猪，哈哈哈哈哈！');
+                    alert('最后希望你不要骂我嘿嘿！')
+                }
+            } else {
+                alert('别费劲了，关不掉的，还是点“确认”吧！');
+                lv();
+            }
+        }
+        lv();
+    </script>
+</body>
+
+</html>
+————————————————
