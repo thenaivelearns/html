@@ -358,6 +358,8 @@ jvm，如何判断是不是垃圾，强软弱虚
 
 
 
+[Cglib和jdk动态代理的区别 - 橙发 - 博客园 (cnblogs.com)](https://www.cnblogs.com/sandaman2019/p/12636727.html)  动态生成的好处很明显**，\**代理逻辑与业务逻辑是互相独立的，没有耦合，\****代理1个类或100个类要做的事情没有任何区别
+
 aop基于什么实现，malloc和new，如何解决幻读，为什么会导致线程不安全（主内存和工作内存）
 
 平时提高效率的软件，数据库连接池的作用，线程池参数，linux命令，三数之和，最左匹配，volatile，原子类
@@ -422,6 +424,4 @@ cas缺点 并发共享虚拟异步
 注解反射 银行家算法 数据库连接池 hashmap concurrenthashmap copyonwrite
 
 <img src="C:\Users\54925\AppData\Roaming\Typora\typora-user-images\image-20220301204703183.png" alt="image-20220301204703183" style="zoom: 67%;" /><img src="C:\Users\54925\AppData\Roaming\Typora\typora-user-images\image-20220302132231381.png" alt="image-20220302132231381" style="zoom:67%;" /><img src="C:\Users\54925\AppData\Roaming\Typora\typora-user-images\image-20220303114155904.png" alt="image-20220303114155904" style="zoom:67%;" />
-
-
 
