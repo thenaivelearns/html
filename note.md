@@ -253,9 +253,19 @@ CAS
 
 内置注解：@Override @Deprecated（过时不推荐使用）@SuppressWarnings（抑制警告）
 
-元注解：meta-annotation，负责注解其他注解；@Target；@Retention；@Documented；@Inherited
+元注解：meta-annotation，负责注解其他注解；
+
+@Target；指定一个注解的使用范围，即被 @Target 修饰的注解可以用在什么地方，ElementType 常用的枚举常量 FIELD METHOD  TYPE
+
+@Retention；用于描述注解的生命周期，也就是该注解被保留的时间长短，SOURCE < CLASS < RUNTIME
+
+@Documented；用 @Documented 注解修饰的注解类会被 JavaDoc 工具提取成文档
+
+@Inherited 用来指定该注解可以被继承
 
 静态动态语言；o.getClass()；Class.forName("com.Student")；Student.class；Integer.TYPE；
+
+反射应用场景：1jdbc时，通过反射获取数据库驱动；2注解/xml配置，解析出字符串，再反射获取对象；3AOP时，利用反射动态生成代理对象
 
 ## 数据库
 
@@ -281,7 +291,30 @@ B+树的优势：
 2. 查找性能更稳定，因为都是要查找到叶子结点。
 3. 叶子结点形成了有序链表，便于查询。范围查询
 
+索引失效：
 
+Like这种就是%在前面的不走索引，在后面的走索引
+
+用索引列进行计算的，不走索引
+
+对索引列用函数了，不走索引
+
+索引列用了!= 不走索引
+
+多列索引查询，最左匹配原则，要使用第一个字段
+
+or要包括所有索引
+
+sql优化
+
+子查询变成left join
+limit 分布优化，先利用ID定位，再分页
+
+or条件优化，多个or条件可以用union all对结果进行合并（union all结果可能重复）
+不必要的排序
+where代替having,having 检索完所有记录，才进行过滤
+避免嵌套查询
+对多个字段进行等值查询时，联合索引
 
 
 
@@ -382,7 +415,7 @@ java类加载过程：[面试干货1——请你说说Java类的加载过程_Luc
 
 ​			[计算机网络——计算机网络常见面试题总结_Magaret的博客-CSDN博客_计算机网络面试题总结](https://blog.csdn.net/u010843421/article/details/82026427)
 
-
+[(15条消息) 为面试做准备，整理一些计算机专业的基础知识_wang-jue的博客-CSDN博客](https://blog.csdn.net/qq_36561737/article/details/116996160)
 
 数据库：[数据库常见面试题（附答案）_csdn问鼎-CSDN博客_数据库面试题](https://blog.csdn.net/qq_22222499/article/details/79060495)
 
@@ -390,28 +423,7 @@ java类加载过程：[面试干货1——请你说说Java类的加载过程_Luc
 
 设计模式：[java常用的设计模式有哪些-Java基础-PHP中文网](https://www.php.cn/java/base/476780.html)
 
-Like这种就是%在前面的不走索引，在后面的走索引
-
-用索引列进行计算的，不走索引
-
-对索引列用函数了，不走索引
-
-索引列用了!= 不走索引
-
-多列索引查询，最左匹配原则，要使用第一个字段
-
-sql优化
-
-子查询变成left join
-limit 分布优化，先利用ID定位，再分页
-
-
-
-or条件优化，多个or条件可以用union all对结果进行合并（union all结果可能重复）
-不必要的排序
-where代替having,having 检索完所有记录，才进行过滤
-避免嵌套查询
-对多个字段进行等值查询时，联合索引
+动态代理：[Java动态代理的两种实现方法_和大黄的博客-CSDN博客_动态代理的两种方式](https://blog.csdn.net/heyutao007/article/details/49738887)
 
 
 
@@ -419,9 +431,35 @@ cas缺点 并发共享虚拟异步
 
 深浅拷贝 获取private字段 设计模式：单例、工厂方法、抽象工厂、建造者、观察者、适配器
 
-<img src="C:\Users\54925\AppData\Roaming\Typora\typora-user-images\image-20220302143418255.png" alt="image-20220302143418255" style="zoom: 67%;" />
+
 
 注解反射 银行家算法 数据库连接池 hashmap concurrenthashmap copyonwrite
 
-<img src="C:\Users\54925\AppData\Roaming\Typora\typora-user-images\image-20220301204703183.png" alt="image-20220301204703183" style="zoom: 67%;" /><img src="C:\Users\54925\AppData\Roaming\Typora\typora-user-images\image-20220302132231381.png" alt="image-20220302132231381" style="zoom:67%;" /><img src="C:\Users\54925\AppData\Roaming\Typora\typora-user-images\image-20220303114155904.png" alt="image-20220303114155904" style="zoom:67%;" />
+事务回滚：[MySQL中是如何实现事务提交和回滚的？_果子爸聊技术-CSDN博客_mysql是如何实现事务回滚的](https://blog.csdn.net/pzjtian/article/details/107453356)
+
+隔离级别实现：[MySQL事务隔离级别和实现原理（看这一篇文章就够了！） - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/117476959)
+
+NIO的作用：[(15条消息) 为什么要有NIO_u010325193的博客-CSDN博客_nio有什么用](https://blog.csdn.net/u010325193/article/details/80310924)
+
+```java
+//获取当前时间戳方法 一
+System.currentTimeMillis();
+//方法 二
+Calendar.getInstance().getTimeInMillis();
+//方法 三
+new Date().getTime();
+
+SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+String date = df.format(new Date());// new Date()为获取当前系统时间，也可使用当前时间戳
+
+for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+    System.out.println("Key = " + entry.getKey() + ", Value = " 	+ entry.getValue());
+}
+
+Iterator<Map.Entry<Integer, Integer>> entries = map.entrySet().iterator();
+while (entries.hasNext()) {
+    Map.Entry<Integer, Integer> entry = entries.next();
+    System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+}
+```
 
