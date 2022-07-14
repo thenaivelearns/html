@@ -1,0 +1,98 @@
+.ace-settings-container {
+                position: absolute;
+                left: 0px;
+                top: 140px;
+                z-index: 12;
+            }
+            
+            .btn.ace-settings-btn {
+                float: left;
+                display: inline-block;
+                width: 42px!important;
+                text-align: center;
+                border-radius: 0 6px 6px 0!important;
+                opacity: .55;
+                filter: alpha(opacity=55.00000000000001);
+                vertical-align: top;
+                margin: 0;
+            }
+            
+            .ace-settings-box {
+                width: 30%;
+                height:700px;
+                border: 2px solid #5293c4;
+                background-color: #fff;
+            }
+            
+            .btn-app.btn-warning, .btn-app.btn-warning.no-hover:hover, .btn-app.btn-warning.disabled:hover {
+                background: #5293c4!important;
+            }
+            
+            .div1 ,.div2 ,.div3 ,.div4 ,.div5 ,.div6 ,.div7 ,.div8{
+                width: 143px;
+                height: 42px;
+                position: absolute;
+                /*background: #000000;*/
+                max-height: 99px !important;
+            }
+            
+            .div8{
+                width: 73px;
+                height: 42px;
+            }
+            
+            .div1{
+                left: 144px;
+                top: 13px;
+            }
+            
+            .div2{
+                left: 39px;
+                top: 167px;
+            }
+            
+            .div3{
+                left: 39px;
+                top: 239px;
+            }
+            
+            .div4{
+                left: 248px;
+                top: 167px;
+            }
+            
+            .div5{
+                left: 248px;
+                top: 239px;
+            }
+            
+            .div6{
+                left: 248px;
+                top: 309px;
+            }
+            
+            .div7{
+                left: 39px;
+                top: 405px;
+            }
+            
+            .div8{
+                left: 346px;
+                top: 405px;
+            }
+            
+            .divFunction{
+                display:none;
+            }
+            
+            .sidebar:before{
+                width:24%;
+                border-width: 0 4px 0 0;
+            }
+            .sidebar{
+                width:24%;
+                border-width: 0 4px 0 0;
+            }
+            .main-content {
+                margin-left: 24%;
+            }

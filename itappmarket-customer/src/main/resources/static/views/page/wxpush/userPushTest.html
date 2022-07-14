@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+	<script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+	<script type="text/javascript" src="/static/views/js/wxpush/userPushTest.js"></script>
+	<style type="text/css">
+	.el-input__inner{
+	    cursor: pointer;
+	 	background-color: #FFF !important;
+	    width: 520px;
+	}
+	.el-textarea__inner{
+		cursor: pointer;
+	    width: 520px;
+	    height: 203px;
+	}
+	.el-textarea.is-disabled .el-textarea__inner{
+		cursor: pointer;
+	 	background-color: #eee !important;
+	    width: 520px;
+	    height: 203px;
+	    color: #848484 !important;
+	}
+	.el-radio-group{
+		line-height: 40px;
+	}
+	.el-message-box__input .el-input .el-input__inner {
+	     width: 390px!important;
+	}
+</style>
+</head>
+<body>
+	<div class="main-container" id="app">
+		<el-form label-width="100px" :model="userInfo"  ref="userInfo">
+
+
+			<el-form-item label="推送用户" prop="userName">
+				<el-select v-model="userInfo.openId" filterable @change="changeUserFund">
+					<el-option v-for="(item,index) in userInfoList" :key="item.openId" :label="item.userName" :value="item.openId"> </el-option>
+				</el-select>
+				<!--<el-input v-model="fundDividend.fundName" type="text" :disabled="isDisabled"></el-input>-->
+			</el-form-item>
+			<el-button v-show="false" id="saveBtn" type="primary" @click="userPushTest('userInfo')">确 定</el-button>
+
+		 </el-form>
+		 
+
+	</div>
+</body>
+</html>

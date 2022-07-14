@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+	<script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+	<script type="text/javascript" src="/static/views/js/wxpush/dividendInfoForm.js"></script>
+	<style type="text/css">
+	.el-input__inner{
+	    cursor: pointer;
+	 	background-color: #FFF !important;
+	    width: 520px;
+	}
+	.el-textarea__inner{
+		cursor: pointer;
+	    width: 520px;
+	    height: 203px;
+	}
+	.el-textarea.is-disabled .el-textarea__inner{
+		cursor: pointer;
+	 	background-color: #eee !important;
+	    width: 520px;
+	    height: 203px;
+	    color: #848484 !important;
+	}
+	.el-radio-group{
+		line-height: 40px;
+	}
+	.el-message-box__input .el-input .el-input__inner {
+	     width: 390px!important;
+	}
+</style>
+</head>
+<body>
+	<div class="main-container" id="app">
+		<el-form label-width="140px" :model="fundDividend" :rules="rules" ref="fundDividend">
+			<el-form-item label="发送日期" prop="sentDate">
+				<el-date-picker type="date" v-model="fundDividend.sentDate" value-format="yyyyMMdd"  format="yyyyMMdd" fundDividend.sentTime></el-date-picker>
+			</el-form-item>
+		    <el-form-item label="发送时间" prop="sentTime">
+<!--				<el-date-picker type="date" v-model="fundDividend.sentTime" value-format="yyyyMMdd"  format="yyyyMMdd" :disabled="isDisabled" ></el-date-picker>-->
+				<el-time-select
+						v-model="fundDividend.sentTime" placeholder="选择时间" :picker-options="{
+    start: '00:00',
+    step: '00:05',
+    end: '23:55'
+  }" :disabled="isDisabled" >
+				</el-time-select>
+			</el-form-item>
+			<el-form-item label="筛选金额" prop="filterAmount">
+				<el-input v-model="fundDividend.filterAmount" @input="fundDividend.filterAmount=formatNumber(fundDividend.filterAmount)" type="text" :disabled="isDisabled"></el-input>
+			</el-form-item>
+			<el-form-item label="公告名称" prop="noticeName">
+				<el-input v-model="fundDividend.noticeName" type="text" :disabled="isDisabled"></el-input>
+			</el-form-item>
+			<el-form-item label="消息开头" prop="messageBegin">
+				<el-input v-model="fundDividend.messageBegin" type="text" :disabled="isDisabled"></el-input>
+			</el-form-item>
+			<el-form-item label="产品名称" prop="fundCode">
+				<el-select v-model="fundDividend.fundCode" multiple filterable placeholder="">
+					<el-option v-for="(item,index) in fundList" :key="item.fundCode+index" :label="item.fundCode+'-'+item.fundName" :value="item.fundCode"> </el-option>
+				</el-select>
+				<!--<el-input v-model="fundDividend.fundName" type="text" :disabled="isDisabled"></el-input>-->
+			</el-form-item>
+			<el-form-item label="消息结尾" prop="messageEnd">
+				<el-input v-model="fundDividend.messageEnd" type="text" :disabled="isDisabled"></el-input>
+			</el-form-item>
+			<el-form-item label="消息链接" prop="messageHref">
+				<el-input v-model="fundDividend.messageHref" type="text" :disabled="isDisabled"></el-input>
+			</el-form-item>
+			<el-button v-show="false" id="saveBtn" type="primary" @click="saveDividendInfo('fundDividend')">确 定</el-button>
+
+		 </el-form>
+		 
+
+	</div>
+</body>
+</html>

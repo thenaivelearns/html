@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.igw:igw-base-spring-mvc:1.2.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-spring-mvc/1.2.0-SNAPSHOT/igw-base-spring-mvc-1.2.0-20200408.075013-5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-spring-mvc/1.2.0-SNAPSHOT/igw-base-spring-mvc-1.2.0-20200408.075013-5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-spring-mvc/1.2.0-SNAPSHOT/igw-base-spring-mvc-1.2.0-20200408.075013-5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

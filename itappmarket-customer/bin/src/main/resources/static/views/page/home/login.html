@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>营销材料管理系统</title>
+    <script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+    <script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/views/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/static/views/css/login.css">
+</head>
+<body class="login-layout">
+ 	<div class="main-container">
+ 		<div class="main-content">
+ 			<div class="row">
+ 				<div class="col-sm-10 col-sm-offset-1">
+ 					<div class="login-container" id="login-box">
+ 						<div class="center">
+							<h1>
+								<span class="red">{{systemName}}</span>
+								<!-- <span class="white">系统</span> -->
+							</h1>
+						</div>
+						<img src="/static/views/image/logo.png" style="width: 150px;height: 150px;position:fixed;top:50px;left:50px"></img>
+						<div class="space-6"></div>
+						<div class="position-relative">
+							<div  class="login-box visible widget-box no-border">
+								<div class="widget-body">
+									<div class="widget-main">
+										<h4 class="header blue lighter bigger">
+											<i class="icon-coffee green"></i> 请输入用户名和密码
+										</h4>
+										<div class="space-6"></div>
+										<label class="block clearfix">
+											<span class="block input-icon input-icon-right">用户名: 
+												<input class="form-control blurEnter" v-model="userName">
+												
+												<i class="icon-user"></i>
+											</span>
+										</label>
+		        									<label class="block clearfix"> 
+		        									    <span class="block input-icon input-icon-right">密码:
+												<input class="form-control blurEnter" :type="pwdType" v-model="password">
+												<i class="icon-lock"></i>
+											</span>
+										</label>
+										<div id="msg"></div>
+										<!-- <p class="text-wrapper" v-if="show">提示信息: {{info}}</p> -->
+										<div class="space-6"></div>
+										<div class="clearfix" style="text-align: right;">
+										     <el-button size="small" type="primary" 
+                                                   @click="loginToSystem()">
+                                                   <i class="icon-key"></i>登录
+                                                   </el-button>
+											
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+ 					</div>
+ 				</div>
+ 			</div>
+ 		</div>
+ 	</div>
+</body>
+<script src="/static/views/js/home/login.js"></script>
+</html>

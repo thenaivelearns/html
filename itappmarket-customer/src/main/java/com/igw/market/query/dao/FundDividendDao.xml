@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.igw.market.query.dao.FundDividendDao">
+
+    <insert id="insertFundDividend" parameterType="com.igw.market.query.domain.FundDividend">
+        INSERT INTO FUNDDIVIDEND
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sysId != null">SYS_ID, </if>
+            <if test="sentDate != null">SENT_DATE, </if>
+            <if test="sentTime != null">SENT_TIME, </if>
+            <if test="filterAmount != null">FILTER_AMOUNT, </if>
+            <if test="messageBegin != null">MESSAGE_BEGIN, </if>
+            <if test="fundName != null">FUND_NAME, </if>
+            <if test="fundCode != null">FUND_CODE, </if>
+            <if test="messageEnd != null">MESSAGE_END, </if>
+            <if test="messageHref != null">MESSAGE_HREF, </if>
+            <if test="createdDate != null">CREATED_DATE, </if>
+            <if test="updatedDate != null">UPDATED_DATE, </if>
+            <if test="noticeName != null">NOTICE_NAME, </if>
+            <if test="createdUser != null">CREATED_USER, </if>
+            <if test="updatedUser != null">UPDATED_USER, </if>
+            <if test="validFlag != null">VALID_FLAG, </if>
+            <if test="sentStatus != null">SENT_STATUS, </if>
+            <if test="reviewStatus != null">REVIEW_STATUS, </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sysId != null">#{sysId}, </if>
+            <if test="sentDate != null">#{sentDate},</if>
+            <if test="sentTime != null">#{sentTime}, </if>
+            <if test="filterAmount != null">#{filterAmount}, </if>
+            <if test="messageBegin != null">#{messageBegin}, </if>
+            <if test="fundName != null">#{fundName}, </if>
+            <if test="fundCode != null">#{fundCode}, </if>
+            <if test="messageEnd != null">#{messageEnd}, </if>
+            <if test="messageHref != null">#{messageHref}, </if>
+            <if test="createdDate != null">#{createdDate}, </if>
+            <if test="updatedDate != null">#{updatedDate}, </if>
+            <if test="noticeName != null">#{noticeName}, </if>
+            <if test="createdUser != null">#{createdUser}, </if>
+            <if test="updatedUser != null">#{updatedUser}, </if>
+            <if test="validFlag != null">#{validFlag}, </if>
+            <if test="sentStatus != null">#{sentStatus}, </if>
+            <if test="reviewStatus != null">#{reviewStatus}, </if>
+        </trim>
+    </insert>
+    <update id="updateFundDividend">
+        UPDATE FUNDDIVIDEND SET
+        <trim suffixOverrides=",">
+            <if test="fundDividend.sentDate!=null">SENT_DATE =#{fundDividend.sentDate},</if>
+            <if test="fundDividend.sentTime!=null">SENT_TIME =#{fundDividend.sentTime},</if>
+            <if test="fundDividend.filterAmount!=null">FILTER_AMOUNT =#{fundDividend.filterAmount},</if>
+            <if test="fundDividend.messageBegin!=null">MESSAGE_BEGIN =#{fundDividend.messageBegin},</if>
+            <if test="fundDividend.fundName!=null">FUND_NAME =#{fundDividend.fundName},</if>
+            <if test="fundDividend.fundCode!=null">FUND_CODE =#{fundDividend.fundCode},</if>
+            <if test="fundDividend.messageEnd!=null">MESSAGE_END =#{fundDividend.messageEnd},</if>
+            <if test="fundDividend.messageHref!=null">MESSAGE_HREF =#{fundDividend.messageHref},</if>
+            <if test="fundDividend.noticeName!=null">NOTICE_NAME =#{fundDividend.noticeName},</if>
+            <if test="fundDividend.sentStatus!=null">SENT_STATUS =#{fundDividend.sentStatus},</if>
+            <if test="fundDividend.reviewStatus!=null">REVIEW_STATUS =#{fundDividend.reviewStatus},</if>
+            <if test="fundDividend.createdUser!=null">CREATED_USER =#{fundDividend.createdUser},</if>
+            <if test="fundDividend.updatedUser!=null">UPDATED_USER =#{fundDividend.updatedUser},</if>
+            UPDATED_DATE=sysdate
+        </trim>
+        WHERE SYS_ID=#{fundDividend.sysId} and VALID_FLAG='0'
+    </update>
+    <update id="deleteFundDividend">
+        UPDATE FUNDDIVIDEND SET VALID_FLAG='1' WHERE VALID_FLAG='0' AND SYS_ID in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
+    <select id="queryFundDividend" resultType="com.igw.market.query.domain.dto.FundDividendDTO">
+        select
+        SYS_ID as sysId,
+        SENT_DATE as sentDate,
+        SENT_TIME as sentTime,
+        FILTER_AMOUNT as filterAmount,
+        MESSAGE_BEGIN as messageBegin,
+        FUND_NAME as fundName,
+        FUND_CODE as fundCode,
+        MESSAGE_END as messageEnd,
+        MESSAGE_HREF as messageHref,
+        NOTICE_NAME as noticeName,
+        PROMPT_TYPE as promptType,
+        SENT_STATUS as sentStatus,
+        REVIEW_STATUS as reviewStatus,
+        CREATED_USER as createdUser,
+        CREATED_DATE as createdDate,
+        UPDATED_USER as updatedUser,
+        UPDATED_DATE as updatedDate
+        from FUNDDIVIDEND
+        <where>
+            VALID_FLAG=0
+            <if test="fundDividend.sysId!=null">
+                and SYS_ID=#{fundDividend.sysId}
+            </if>
+            <if test="fundDividend.fundName!=null">
+                and FUND_NAME=#{fundDividend.fundName}
+            </if>
+            <if test="fundDividend.fundCode!=null">
+                and FUND_CODE=#{fundDividend.fundCode}
+            </if>
+            <if test="fundDividend.sentDate!=null">
+                and SENT_DATE=#{fundDividend.sentDate}
+            </if>
+            <if test="fundDividend.sentTime!=null">
+                and SENT_TIME=#{fundDividend.sentTime}
+            </if>
+            <if test="fundDividend.promptType!=null">
+                and PROMPT_TYPE=#{fundDividend.promptType}
+            </if>
+            <if test="fundDividend.sentStatus!=null">
+                and SENT_STATUS=#{fundDividend.sentStatus}
+            </if>
+            <if test="fundDividend.reviewStatus!=null">
+                and REVIEW_STATUS=#{fundDividend.reviewStatus}
+            </if>
+            <if test="fundDividend.noticeName != null and fundDividend.noticeName != ''">
+                and NOTICE_NAME like '%${fundDividend.noticeName}%'
+            </if>
+        </where>
+    </select>
+</mapper>

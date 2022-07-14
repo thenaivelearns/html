@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.igw:igw-base-restful:1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-restful/1.0-SNAPSHOT/igw-base-restful-1.0-20200803.121120-6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-restful/1.0-SNAPSHOT/igw-base-restful-1.0-20200803.121120-6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-restful/1.0-SNAPSHOT/igw-base-restful-1.0-20200803.121120-6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

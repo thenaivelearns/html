@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>      
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+	<script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+	<script type="text/javascript" src="/static/views/js/wxpush/dividendNotice.js"></script>
+	<style type="text/css">
+		 .el-table td, .el-table th {
+		      padding: 5px 0;
+		 }
+	     .el-pagination__total {
+	    	 float: right;
+	     }
+	     .el-pagination {
+	         padding: 8px 15px;
+	     }
+	     .el-button{
+	         border: 0px solid #DCDFE6;
+	         /*height: 37px;*/
+	     }
+	 
+	     .widths{
+	       width:150px;
+	     }
+	     .el-table__body tr,el-table__body td {
+	     	padding:0 0 0 0!important;
+	     	height:40px !important;
+	     }
+	</style>
+</head>
+<body>
+	<div class="main-container" id="app" style="overflow-y: hidden; margin: 0 10px 0 0px">
+	    <div style="margin: 0 100px 0 100px">
+			<h2>分红通知</h2>
+			<div>
+				<template>
+					<el-button size="small" type="danger"  @click="editDividend('1','')" style="margin-top: 15px;">新增 <i class="el-icon-circle-plus-outline"></i></el-button>
+				</template>
+				<el-form style="float:right;margin-right: -15px;">
+						公告名称: <el-input v-model="noticeName" style="width:200px;margin-top: 10px;" @input="searchClick()"></el-input>&nbsp;&nbsp;&nbsp;&nbsp;
+				  </el-form> 
+			</div>
+			</br>
+			</br>
+			<div class="tabbable tabs-left" >
+				<el-table :data="fundDividendList" stripe border style="width:100%" :header-cell-style="{background:'#FAFAFA',}">
+					<!-- <el-table-column prop="fundSysCode" label="产品ID" width="500" height="10px" v-if="isShow">
+					</el-table-column> -->
+					<el-table-column prop="noticeName" label="公告名称" width="300" height="10px" fixed>
+					</el-table-column> 
+					
+					<el-table-column prop="sentDate" label="推送日期" width="200" height="10px" fixed>
+
+					</el-table-column>
+					<el-table-column prop="sentTime" label="推送时间" width="180" height="10px" fixed>
+
+					</el-table-column>
+					
+					<el-table-column prop="sentStatus"  label="推送状态" width="180">
+						<template slot-scope="scope">
+							<span v-if="scope.row.sentStatus == '2'" >已推送</span>
+							<span v-else>未推送</span>
+						</template>
+					</el-table-column>
+					
+					<el-table-column prop="reviewStatus"  label="是否复核" width="180">
+						<template slot-scope="scope">
+							<span v-if="scope.row.reviewStatus == '2'" >已复核</span>
+							<span v-else>未复核</span>
+						</template>
+					</el-table-column>
+					
+					<!-- <el-table-column prop="identityId"  label="身份证" width="300">
+					</el-table-column> -->
+					
+					
+					<el-table-column prop="operation" label="操作" fixed="right">
+					   <template slot-scope="scope">
+						    <el-button size="mini" type="primary"  class="widths" @click="pushTest(5,scope.row.sysId)">测试推送<i class="el-icon-view el-icon--right"></i></el-button>
+					   		<el-button size="mini" type="primary"  class="widths" @click="editDividend(2,scope.row.sysId)">编辑<i class="el-icon-view el-icon--right"></i></el-button>
+					   		<el-button size="mini" type="warning"  v-show="scope.row.isShowCheck =='1'" class="widths" @click="editDividend(3,scope.row.sysId)">复核<i class="el-icon-view el-icon--right"></i></el-button>
+					   		<el-button size="mini" type="danger"  class="widths" @click="deleteDividend(scope.row.sysId)">删除<i class="el-icon-view el-icon--right"></i></el-button>
+					   </template>
+					</el-table-column> 
+					
+				</el-table>
+				<br>
+				 <el-pagination background 
+						 :page-size="paging.pageSize" 
+						 @current-change="handleCurrentChange"
+						 @size-change="handleSizeChange"
+                         :current-page="paging.pageNumber"
+                         :page-sizes="paging.sizes"
+                         layout="sizes,prev,pager,next,jumper,total"
+                         :total="paging.totalRows"> 
+			</div>
+	     </div>
+		<!-- 表单iframe -->
+		<el-dialog :title="formInfo.title" :visible.sync="formInfo.formShow" width="40%" top="20px" :before-close="handleClose">
+			<iframe id="iframeMain1" ref="iframeMain1"
+					style="border: none;"
+					width="100%"
+					:src="formInfo.formSrc"
+					height="700px">
+			</iframe>
+			<div slot="footer" class="dialog-footer">
+				<el-button v-show="type!='4'" @click="formInfo.formShow=false">取 消</el-button>
+				<el-button v-show="type!='4'" type="primary" @click="save()">确 定</el-button>
+
+			</div>
+		</el-dialog>
+	</div>
+	
+	
+</html> 
+
+
+

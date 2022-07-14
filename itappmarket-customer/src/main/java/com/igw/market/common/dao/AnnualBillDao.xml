@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace：必须与对应的接口全类名一致 id:必须与对应接口的某个对应的方法名一致 -->
+
+<mapper namespace="com.igw.market.common.dao.AnnualBillDao">
+
+   <select id="searchList" parameterType="java.util.Map" resultType="com.igw.market.common.domain.WechatUserInfo">
+      select 
+        w.pk_serial pkSerial,
+        w.open_id   openId,
+        w.fund_acco fundAcco,
+        w.user_name  userName,
+        w.user_mobile userMobile,
+        w.user_email  userEmail,
+        w.IDENTITY_ID  identityId,
+          w.identity_type identitytype
+       from wechat_user_info w
+      where 
+      w.valid_flag = '0'
+      <if test="openId != null and openId != ''">
+      AND w.open_id  = #{openId}
+      </if>
+      AND w.wechat_code = #{wechatCode}
+      <if test="userName != null and userName != ''">
+      AND w.user_name LIKE '%${userName}%'
+      </if>
+      <if test="identityId != null and identityId != ''">
+      AND w.IDENTITY_ID = #{identityId}
+      </if>
+      <if test="isOn != null and isOn != ''">
+      AND w.IDENTITY_ID is not null and  w.IDENTITY_ID   not in (select custno from wx_annual_bill where tdate = #{year})
+      </if>
+   </select>
+   
+   <select id="getWechatUserDetail" parameterType="java.lang.String" resultType="com.igw.market.common.domain.WechatUserInfo">
+       select 
+        w.pk_serial pkSerial,
+        w.open_id   openId,
+        w.fund_acco fundAcco,
+        w.user_name  userName,
+        w.user_mobile userMobile,
+        w.user_email  userEmail
+       from wechat_user_info w
+      where 
+      w.valid_flag = '0'
+      and w.pk_serial = #{pkSerial}
+   </select>
+   <!-- 创建年度账单 -->
+   <insert id="addBill" parameterType="com.igw.market.common.domain.AnnualBillInfo">
+      <selectKey resultType="String" keyProperty="pkId" order="BEFORE">
+		   SELECT wx_annual_bill_PK.NEXTVAL AS pkId FROM DUAL
+		</selectKey>
+		INSERT INTO wx_annual_bill
+			( 
+			    pk_id,
+				custno, 
+				tDate,
+				cstate,
+				bill,
+				msgdesc,
+				VALID_FLAG,
+				CREATED_USER,
+				CREATED_DATE
+			)
+		VALUES
+			(
+				#{pkId,jdbcType=VARCHAR},
+				#{custno,jdbcType=VARCHAR},
+				#{tDate,jdbcType=VARCHAR},
+				#{cstate,jdbcType=VARCHAR},
+				#{bill,jdbcType=VARCHAR},
+				#{msgdesc,jdbcType=VARCHAR},
+				 '0',
+				#{createdUser,jdbcType=VARCHAR},
+				sysdate
+			)
+   </insert>
+   
+   <select id="getFundNameByCode" parameterType="java.lang.String" resultType="java.lang.String">
+      select decode(c_fundname_short,'',a.c_fundname, a.c_fundname_short) c_fundname from tfundinfo a
+      where 
+      a.c_fundcode = #{fundcode}
+   </select>
+   
+   <!-- 查询年度账单 -->
+   <select id="getMyAnnualBill" parameterType="java.util.Map" resultType="com.igw.market.common.domain.AnnualBillInfo">
+      select    pk_id pkId,
+				custno, 
+				tDate,
+				cstate,
+				bill,
+				msgdesc
+		 from 	wx_annual_bill
+		 where 	VALID_FLAG = '0'
+		 and custno = #{custno}
+		 and tDate = #{year}
+		 order by CREATED_DATE desc
+   </select>
+   
+   <!-- 购买基金 -->
+   <select id="getOperationFundCodes" parameterType="java.util.Map" resultType="java.lang.String">
+      select a.c_fundcode from tconfirm a where 
+      a.c_status = '1' and a.c_businflag in ('01','02','16','39')
+      and a.c_custno = #{cCustno}
+      and to_char(a.d_cdate,'yyyy-MM-dd') &gt;=#{startDate}
+       and to_char(a.d_cdate,'yyyy-MM-dd') &lt; #{endDate} 
+       group by c_fundcode
+   </select>
+   <!-- 基金操作次数、现金宝转基金次数 -->
+   <select id="getOperationCounts" parameterType="java.util.Map" resultType="java.lang.Integer">
+       select count(a.c_businflag) from tconfirm a where 
+      a.c_status = '1' and a.c_businflag in ('01','02','03','13','KC','39')
+      and a.c_custno = #{cCustno} 
+      and to_char(a.d_cdate,'yyyy-MM-dd') &gt;=#{startDate}
+       and to_char(a.d_cdate,'yyyy-MM-dd') &lt; #{endDate} 
+      <if test="nowjinbao != null and nowjinbao != ''">
+       and a.c_businflag = '13' and a.c_fundcode = '000380' and a.c_agencyno ='226'
+      </if> 
+   </select>
+   
+   
+   <!-- 通过证件获取客户号 -->
+   <select id="getCustNo" parameterType="java.util.Map" resultType="java.util.Map">
+		   SELECT distinct a.c_custno CUSTNO,a.c_custname CUSTNAME
+		 FROM tcustomerinfo a left join taccoinfo b 
+		on a.c_custno = b.c_custno
+		where a.c_identityno = #{identityId} and a.c_identitytype = #{identitytype} 
+		and ( b.c_fundacco is not null
+		<![CDATA[  
+		 and length(b.c_fundacco) <> 10 )
+		 ]]>
+   </select>
+    <!-- 通过客户号获取账户类型-->
+   <select id="getProperty" parameterType="java.lang.String" resultType="java.lang.String">
+          SELECT  distinct c_property FROM tcustomerinfo where  c_custno = #{custNo} 
+   </select>
+   <!-- 通过客户号获取基金账户 -->
+   <select id="getFundAccoByCustNo" parameterType="java.lang.String" resultType="java.lang.String">
+           select distinct c_fundacco from taccoinfo where c_custno = #{identityId}  
+   </select>
+   <!-- 通过基金账号获取客户号 -->
+    <select id="getCustNoByFundacco" parameterType="java.lang.String" resultType="java.util.Map">
+           select  c_custno CUSTNO,c_custname CUSTNAME  from taccoinfo  where c_fundacco = #{fundacco}
+   </select>
+   <!-- 获取资产 -->
+   <select id="getPersonalAssets" parameterType="java.util.Map" resultType="java.lang.String">
+   <![CDATA[  
+          select sum(a.f_lastshares * d.f_netvalue)
+			  from tsharecurrents a, tcustomerinfo b, tfundinfo c, tfundday d
+			where a.c_custno = b.c_custno
+			   and a.c_custno = #{custNo}
+			   and (length(a.c_fundacco) <> 10 and  a.c_fundacco is not null)
+			   and a.d_cdate <= to_date( #{date} ,'yyyyMMdd') 
+			   and a.d_sharevaliddate > to_date( #{date} ,'yyyyMMdd') 
+			   and d.d_date = (select max(t.d_date)
+			                     from tfundday t
+			                    where t.c_fundcode = a.c_fundcode
+			                      and t.c_published = '1'
+			                      and t.d_date <= to_date( #{date} ,'yyyyMMdd') )
+			   and a.c_fundcode = d.c_fundcode
+			   and a.c_fundcode = c.c_fundcode
+			   and c.c_raisetype = '1'
+			   and a.f_lastshares > 0
+   ]]>
+   </select>
+   <!-- 获取持有基金及资产 -->
+   <select id="getHoldFundDetail" parameterType="java.util.Map" resultType="java.util.Map">
+   <![CDATA[  
+     select a.*,c.c_fundname fundName, t.fundtp1 fundtype from (
+		select a.c_fundcode fundCode ,sum(a.f_lastshares * d.f_netvalue) assets
+		  from tsharecurrents a, tcustomerinfo b, tfundinfo c, tfundday d
+		where a.c_custno = b.c_custno
+		   and a.c_custno = #{custNo} 
+		   and (length(a.c_fundacco) <> 10 and  a.c_fundacco is not null)
+		   and a.d_cdate <= to_date( #{date} ,'yyyyMMdd') 
+		   and a.d_sharevaliddate > to_date( #{date} ,'yyyyMMdd') 
+		   and d.d_date = (select max(t.d_date)
+		                     from tfundday t
+		                    where t.c_fundcode = a.c_fundcode
+		                      and t.c_published = '1'
+		                      and t.d_date <= to_date( #{date} ,'yyyyMMdd') )
+		   and a.c_fundcode = d.c_fundcode
+		   and a.c_fundcode = c.c_fundcode
+		   and c.c_raisetype = '1'
+		   and a.f_lastshares > 0
+		   group by
+		   a.c_fundcode ) a
+		   left join tfundinfo  c on a.fundCode = c.c_fundcode
+		   left join comweb.t_fnd_fundinfo t on a.fundCode = t.fundid
+    ]]>
+   </select>
+   
+   <!-- 资产明细 -->
+   <select id="getAssetDetailsList" parameterType="java.util.Map" resultType="java.util.Map">
+      <![CDATA[  
+      	      SELECT totalassets, fundcode, decode(c_fundname_short,'',fundname,c_fundname_short) fundname ,lastshares,netvalue,agencyname FROM (
+    select sum(a.f_lastshares * d.f_netvalue) totalassets ,a.c_fundcode fundcode , 
+           c.c_fundname fundname , c_fundname_short , sum(a.f_lastshares) lastshares,d.f_netvalue netvalue , e.c_agencyname  agencyname 
+         from tsharecurrents a, tcustomerinfo b, tfundinfo c, tfundday d , tagencyinfo e 
+           where a.c_custno = b.c_custno
+         and a.c_agencyno = e.c_agencyno
+              and a.c_custno = #{custNo}  
+              and (length(a.c_fundacco) <> 10 and  a.c_fundacco is not null)
+              and a.d_cdate <= to_date( #{date},'yyyyMMdd') 
+              and a.d_sharevaliddate > to_date( #{date} ,'yyyyMMdd') 
+              and d.d_date = (select max(t.d_date)
+                                from tfundday t
+                               where t.c_fundcode = a.c_fundcode
+                                 and t.c_published = '1'
+                                 and t.d_date <= to_date(#{date} ,'yyyyMMdd') )
+              and a.c_fundcode = d.c_fundcode
+              and a.c_fundcode = c.c_fundcode
+              and d.c_published = '1'
+              and c.c_raisetype = '1'
+              and a.f_lastshares > 0
+         group by a.c_fundcode ,c.c_fundname ,d.f_netvalue ,c_fundname_short ,e.c_agencyname
+         )
+    ]]>
+   </select>
+   
+   <!-- 获取基金持有过的基金 -->
+   <select id="getFundByAcco" parameterType="java.util.Map" resultType="java.util.Map">
+       select  a.c_fundcode fundcode, t.c_fundname fundname from ( select a.c_fundcode from tsharecurrents a where a.c_fundacco = #{fundAcco} and a.f_lastshares > 0 and a.d_cdate &lt;= to_date( #{endDateTime} ,'yyyyMMdd') 
+   group by  a.c_fundcode ) a left join tfundinfo t on a.c_fundcode = t.c_fundcode
+   </select>
+   
+   <!-- 期间收益 -->
+   <resultMap type ="java.util.Map" id= "cursor3Map">
+              
+   </resultMap>
+   <select id="fcCustiiDetailinfox" parameterType="java.util.Map" statementType="CALLABLE" >
+        {   
+              #{resultMap ,jdbcType=CURSOR,mode=OUT,javaType=ResultSet,resultMap=cursor3Map} = call pkgprofitanalyse6.fc_custii_detailinfox
+              (
+                  #{startDate,jdbcType=DATE,mode=IN},
+                  #{endDate,jdbcType=DATE,mode=IN},
+                  #{custno,jdbcType=VARCHAR,mode=IN},
+                  '4',
+                  '0',
+                  '1'
+              )
+         }
+   </select>
+   
+   <select id="getfloatingprofitlosscust" parameterType="java.util.Map" statementType="CALLABLE" >
+       {   
+              #{resultMap ,jdbcType=CURSOR,mode=OUT,javaType=ResultSet,resultMap=cursor3Map} = call pkgprofitanalyse6.getfloatingprofitlosscust
+              (
+                  #{endDate,jdbcType=DATE,mode=IN},
+                  #{custno,jdbcType=VARCHAR,mode=IN}
+              )
+         }
+   </select>
+   
+   <!--资产变动    基金代码，期间转入，期间转出， -->
+   <select id="changesAssets" parameterType="java.util.Map" resultType="java.util.Map">
+		    <![CDATA[  
+		SELECT a.c_fundcode ,sum( decode(a.c_businflag,'KC',a.f_confirmshares,a.f_confirmbalance) ) balace, 
+			decode(a.c_businflag,'01','0','02','0','16','0','39','0','03','1','95','1','13','1','53','1','KC','1') typeFlag 
+		FROM tconfirm a 
+		WHERE a.c_custno =  #{custno} 
+			and a.d_cdate >=  to_date( #{startDate} ,'yyyyMMdd')  and a.d_cdate <=  to_date( #{endDate} ,'yyyyMMdd') 
+			and a.c_businflag in ('01','02','03','13','16','95','39','53','KC')
+			and a.c_status = '1'
+			group by a.c_fundcode , decode(a.c_businflag,'01','0','02','0','16','0','39','0','03','1','95','1','13','1','53','1','KC','1')
+		   ]]>
+   </select>
+   
+   <!-- 基金收益情况 -->
+   <resultMap type ="java.util.Map" id= "cursor2Map">
+              
+   </resultMap>
+   <select id="getSingleiiyinfo" parameterType="java.util.Map" statementType="CALLABLE" resultType="java.util.Map">
+      {   
+              #{resultMap ,jdbcType=CURSOR,mode=OUT,javaType=ResultSet,resultMap=cursor2Map} = call pkgprofitanalyse6.fc_singleiiy_info
+              (
+                  #{startDate,jdbcType=DATE,mode=IN},
+                  #{endDate,jdbcType=DATE,mode=IN},
+                  #{fundAcco,jdbcType=VARCHAR,mode=IN},
+                  #{fundCode,jdbcType=VARCHAR,mode=IN},
+                  #{p_sharetype,jdbcType=VARCHAR,mode=IN},
+                  #{p_agencyno,jdbcType=VARCHAR,mode=IN}
+              )
+         }
+   
+   </select>
+   
+   <!-- 年度收益 -->
+   <resultMap type ="com.igw.market.common.dto.UserFundAsset" id= "cursorMap">
+              <!-- 配置返回游标中别名对应的resultMap -->
+              <result  column ="beginDate" property="beginDate"/>
+              <result  column ="endDate" property="endDate"/>
+              <result  column ="fundAcco" property="fundAcco"/>
+              <result  column ="fundCode" property="fundCode"/>
+              <result  column ="fincm" property="sumIncome"/>
+              <result  column ="pincm" property="yesterDayIncome"/>
+       </resultMap>
+   
+   
+<select id="getUserAssetAndProfit" parameterType="java.util.Map" statementType="CALLABLE">
+    
+	    {   
+              #{assetMap ,jdbcType=CURSOR,mode=OUT,javaType=ResultSet,resultMap=cursorMap} = call PKG_IGW_zfb.p_igw_asset_zfb
+              (
+                  #{startDate,jdbcType=DATE,mode=IN},
+                  #{endDate,jdbcType=DATE,mode=IN},
+                  #{fundAcco,jdbcType=VARCHAR,mode=IN},
+                  #{fundCode,jdbcType=VARCHAR,mode=IN},
+                  #{p_sharetype,jdbcType=VARCHAR,mode=IN},
+                  #{p_agencyno,jdbcType=VARCHAR,mode=IN}
+              )
+         }
+
+</select>
+	
+</mapper>

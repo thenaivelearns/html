@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.igw.market.portal.dao.OaDocDetailDao">
+
+	<select id="getOaNews" parameterType="java.util.Map" resultType="com.igw.market.portal.domain.OaDocDetail"> 
+        		select 
+        				<if test="top != null">
+        					top ${top } 
+        				</if>
+						t.id,
+						t.docsubject,
+						t.doccontent,
+						t.doccreatedate,
+						t.doclastmoddate 
+					from docDetail t
+					where 1=1
+					
+					<if test="id != null">
+						and t.id = #{id}
+					</if>
+					<if test="maincategory != null">
+						and t.maincategory = #{maincategory}
+					</if>
+					<if test="subcategory != null">
+				   	   	and t.subcategory = #{subcategory}
+				   	</if>
+				   	<if test="seccategory != null">
+				   	   	and t.seccategory = #{seccategory}
+				   	</if>
+				   	<if test="docsubject != null">
+				   		and t.docsubject like '%${docsubject}%'
+				   	</if>
+				   	
+				   	<if test="seccategory1 != null and seccategory2 != null">
+				   		and seccategory in (#{seccategory1},#{seccategory2}) or (maincategory=0 and subcategory=0 and seccategory=1193)
+				   	</if>
+					order by t.id desc
+    </select>
+    
+    
+    <select id="getDept" resultType="com.igw.market.portal.domain.OaDocDetail"> 
+        	select a.id ,a.departmentname ,a.supdepid from hrmdepartment a order by a.supdepid asc
+    </select>
+	
+	
+	 <select id="getHrmresouceByInfo" parameterType="java.util.Map" resultType="com.igw.market.portal.domain.OaHrmresource"> 
+			  select a.id,
+		       	   a.lastname,
+		       	   e.filerealpath+e.imagefilename as filePath,
+			       a.sex,
+			       a.email,
+				   b.departmentname,
+				   d.locationname,
+			       c.jobtitlename,
+			       a.telephone,
+			       a.mobile,
+			       a.createDate as entryDate,
+			       a.fax
+			  from hrmresource a, hrmdepartment b, hrmjobtitles c ,HrmLocations d ,imagefile e
+			 where a.departmentid = b.id
+			   and a.jobtitle = c.id 
+			   and a.locationid = d.id
+			   and a.resourceimageid = e.imagefileid
+			   		and a.status ='1'
+			 	<if test="departmentid != null">
+			   			and a.departmentid = #{departmentid}
+			   		</if>
+			   		<if test="id != null and id != '' ">
+				   		and a.id = #{id}
+				    </if>
+				    <if test="newStaff != null and newStaff != '' ">
+				   		and a.createdate = (select max(createdate) from hrmresource a where a.status ='1')
+				    </if>
+			 order by departmentid , dsporder asc, seclevel desc 
+    </select>
+    
+    <select id="getEntryYear" resultType="com.igw.market.portal.domain.OaDocDetail"> 
+        	<![CDATA[  
+        		select 	
+       			a.id,a.lastname ,LEFT(a.createdate,4) as createyear,b.departmentname ,a.createdate as entryDate  from HrmResource a 
+				left join hrmdepartment b on a.departmentid= b.id
+				where 
+				a.createdate < CONVERT(varchar(100),GETDATE() ,23) and
+				RIGHT(a.createdate,5)='08-14' and (a.enddate ='' or a.enddate is null)
+			]]>
+    </select>
+    
+    
+    <select id="getFineStaff" resultType="com.igw.market.portal.domain.OaDocDetail"> 
+        		   <![CDATA[  
+        		 select b.id,
+        		 		c.departmentname, 
+				        b.createdate entryDate, 
+				        b.lastname
+				  from formtable_main_331 a
+				  left join hrmresource b
+				    on a.youx1 = b.id
+				  left join hrmdepartment c
+				    on b.departmentid = c.id
+				 where sele = '0'
+				  ]]>
+    </select>
+    
+    <select id="getFineDept" resultType="com.igw.market.portal.domain.OaDocDetail"> 
+       		   <![CDATA[  
+       		 	select b.departmentname, 
+       		 		c.lastname
+				  from formtable_main_331 a
+				  left join hrmdepartment b
+				    on a.youx2 = b.id
+				  left join hrmresource c
+				    on c.id = a.youxleader
+				 where sele = '1'
+				   and a.youxleader != ''
+			  ]]>
+    </select>
+    
+    
+    <select id="getDocFile" parameterType="java.util.Map" resultType="com.igw.market.portal.domain.OaDocDetail">
+		select id,
+		       docid,
+		       imagefileid,
+		       imagefilename
+		  from docimagefile
+		 where docid = #{id}
+		 order by id asc
+	</select>
+	
+	<select id="getImageFile" parameterType="java.util.Map" resultType="com.igw.market.portal.domain.OaHrmresource">
+		select imagefileid,
+			   imagefilename,
+			   isencrypt,
+			   filerealpath filePath,
+			   isZip,
+			   imagefiletype,
+			   imagefile
+		  from imagefile 
+		 where imagefileid = #{fileId}
+	</select>
+	
+</mapper>  

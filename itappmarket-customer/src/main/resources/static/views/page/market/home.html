@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>      
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+	<script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+	<script type="text/javascript" src="/static/views/js/market/home.js"></script>
+	<style type="text/css">
+		 .el-table td, .el-table th {
+		      padding: 5px 0;
+		 }
+	     .el-pagination__total {
+	    	 float: right;
+	     }
+	     .el-pagination {
+	         padding: 8px 15px;
+	     }
+	     .el-button{
+	         border: 0px solid #DCDFE6;
+	         /*height: 37px;*/
+	     }
+	 
+	     .widths{
+	       width:150px;
+	     }
+	     .el-table__body tr,el-table__body td {
+	     	padding:0 0 0 0!important;
+	     	height:40px !important;
+	     }
+	     .el-radio-group {
+	       margin-top:12px
+	     }
+	</style>
+</head>
+<body>
+	<div class="main-container" id="app" style="overflow-y: hidden; margin: 0 10px 0 0px">
+	    <div style="margin: 0 100px 0 100px">
+			<h2>委托人列表</h2>
+			<div>
+		        <template> 
+		             <el-button  size="mini"  type="primary"  @click=" fundManagerForm = {}, formTitle = '新增', editType = '0', fundManagerFormShow = true, isBaseDisabled = false">新增 <i class="el-icon-circle-plus-outline"></i></el-button>
+				            
+				</template>     
+				<el-form style="float:right;margin-right: -15px;">
+				          机构客户名称: <el-input v-model="serch.institutionalLikeName" style="width:200px;margin-top: 10px;" @input="searchClick()"></el-input>&nbsp;&nbsp;&nbsp;&nbsp;  
+				     
+				  </el-form> 
+			</div>
+			</br>
+			</br>
+			<div class="tabbable tabs-left" >
+				<el-table :data="fundList" stripe border style="width:100%" :header-cell-style="{background:'#FAFAFA',}">
+					<!-- <el-table-column prop="fundSysCode" label="产品ID" width="500" height="10px" v-if="isShow">
+					</el-table-column> -->
+					<el-table-column prop="institutionalName" label="机构客户名称" width="200" height="10px" fixed>
+					</el-table-column> 
+					<el-table-column prop="tradeSeat"  label="交易席位" width="150">
+					</el-table-column>
+					<el-table-column prop="clearCode"  label="清算代码" width="150">
+					</el-table-column>
+					<el-table-column prop="shStockCode"  label="上海股东代码" width="200">
+					</el-table-column>
+					<el-table-column prop="szStockCode"  label="深证股东代码" width="200">
+					</el-table-column>
+					<el-table-column prop="email"  label="邮箱" width="300">
+					</el-table-column>
+					
+					<el-table-column prop="reportPath" label="导出路径" width="200" height="10px" >
+					</el-table-column> 
+					
+					<el-table-column prop="reportName"  label="导出名称" width="150">
+					</el-table-column>
+					
+					<el-table-column prop="isZip"  label="是否需要打包" width="150">
+					    <template slot-scope="scope">
+									  <span style="color:red" v-if="scope.row.isZip == '0'">是</span>
+									  <span v-else>否</span>
+								</template>
+					</el-table-column>
+			
+					<el-table-column prop="operation" label="操作" fixed="right">
+					   <template slot-scope="scope">
+					   			   <el-button size="small" type="danger"   @click="fundManagerForm = JSON.parse(JSON.stringify(scope.row)), formTitle = '编辑', editType = '2', fundManagerFormShow = true, isBaseDisabled = false">修改<i class="el-icon-edit el-icon--right"></i></el-button>
+					   			   	<el-button size="small" type="warning"  @click="del(scope.row)">删除<i class="el-icon-delete el-icon--right"></i></el-button>
+					   </template>
+					</el-table-column> 
+					
+				</el-table>
+				<br>
+				 <el-pagination background 
+						 :page-size="paging.pageSize" 
+						 @current-change="handleCurrentChange"
+						 @size-change="handleSizeChange"
+                         :current-page="paging.pageNumber"
+                         :page-sizes="paging.sizes"
+                         layout="sizes,prev,pager,next,jumper,total"
+                         :total="paging.totalRows"> 
+			</div>
+	     </div>
+	     
+			  
+		 <el-dialog :title="formTitle" :before-close="handleClose" :visible.sync="fundManagerFormShow" width="35%" top="20px">
+	    <el-form label-width="140px" :model="fundManagerForm" :rules="fundManagerRules" ref="fundManagerForm">
+		  <el-form-item label="机构客户名称" prop="institutionalName">
+		      	<el-input v-model="fundManagerForm.institutionalName" :disabled="isBaseDisabled"  type="text"  style="width:400px!important;"></el-input>
+		  </el-form-item>
+	       <el-form-item label="交易席位" prop="tradeSeat">
+		      	<el-input v-model="fundManagerForm.tradeSeat" :disabled="isBaseDisabled"  type="text"  style="width:400px!important;"></el-input>
+		  </el-form-item>
+	      <el-form-item label="清算代码" prop="clearCode">
+		      	<el-input v-model="fundManagerForm.clearCode" :disabled="isBaseDisabled"  type="text"  style="width:400px!important;"></el-input>
+		  </el-form-item>
+	      <el-form-item label="上海股东代码" prop="shStockCode">
+		      	<el-input v-model="fundManagerForm.shStockCode" :disabled="isBaseDisabled"  type="text"  style="width:400px!important;"></el-input>
+		  </el-form-item  prop="shStockCode">
+	       <el-form-item label="深证股东代码" prop="szStockCode">
+		      	<el-input v-model="fundManagerForm.szStockCode" :disabled="isBaseDisabled"  type="text"  style="width:400px!important;"></el-input>
+		  </el-form-item>
+		   <el-form-item label="是否需要打包">
+		          <el-radio-group v-model="fundManagerForm.isZip":disabled="isBaseDisabled" > 
+								<el-radio label="0">是</el-radio>
+								<el-radio label="1">否</el-radio> 
+							</el-radio-group>
+		  </el-form-item>
+		   <el-form-item label="导出路径">
+		      	<el-input v-model="fundManagerForm.reportPath" :disabled="isBaseDisabled"  type="text"  style="width:400px!important;"></el-input>
+		  </el-form-item>
+		   <el-form-item label="导出名称">
+		      	<el-input v-model="fundManagerForm.reportName" :disabled="isBaseDisabled"  type="text"  style="width:400px!important;"></el-input>
+		  </el-form-item>
+		   <el-form-item label="邮箱(多个;号分隔)">
+		      	<el-input v-model="fundManagerForm.email" :disabled="isBaseDisabled"  type="text"  style="width:400px!important;"></el-input>
+		  </el-form-item>
+			      <span  v-if="fundManagerForm.checkState == '2' && editType == '2'" style="color: red;margin-left: 80px">驳回备注:{{checkRemark}}</span>
+			 	
+	    </el-form>
+	    <div slot="footer" class="dialog-footer">
+	        
+
+	        <el-button v-show="editType != '3'" type="info"  @click="fundManagerFormShow=false">取 消</el-button>
+	        	        <el-button v-show="editType != '3'" type="primary" @click="saveFundManager('fundManagerForm')">确 定</el-button>
+	        	        
+	    </div>
+	</el-dialog> 	  
+			  
+			  
+	</div>
+	
+	
+</html> 
+
+
+

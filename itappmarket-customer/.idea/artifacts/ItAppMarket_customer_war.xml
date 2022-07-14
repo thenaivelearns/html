@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ItAppMarket-customer:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>ItAppMarket-customer</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="ItAppMarket-customer.war">
+      <element id="artifact" artifact-name="ItAppMarket-customer:war exploded" />
+    </root>
+  </artifact>
+</component>

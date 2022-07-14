@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+ -->
+ 
+<mapper namespace="com.igw.market.systemInfo.dao.ManagementDao">
+
+	<!-- 基础信息管理-用户管理-用户信息list查询 -->
+	<select id="getUserList" parameterType="map" resultType="Management">
+		SELECT A.PK_SERIAL      AS userPk,
+		       A.ACCOUNT_ID     AS userName,
+		       A.ACCOUNT_NAME   AS accountName,
+		       A.VALID_FLAG     AS validFlag
+		  FROM SYSTEM_USER_INFO A
+		  	<if test="roleId != null">
+		  	   , system_role_info b, user_role_info c
+		  	</if>
+		 WHERE A.SYSTEM_ID = #{systemId}
+		 	<if test="roleId != null">
+				   AND b.role_id = #{roleId}
+				   AND b.pk_serial = c.role_id
+				   AND c.account_id = a.pk_serial
+				   AND b.VALID_FLAG = '0'
+		   		   AND c.VALID_FLAG = '0'
+		  	</if>
+		    <if test="validFlag == null">
+		        AND A.VALID_FLAG = '0'
+		    </if>
+		 ORDER BY A.ACCOUNT_ID
+	</select>
+	
+	<!-- 基础信息管理-角色管理-角色信息list查询 -->
+	<select id="getRoleList" parameterType="String" resultType="Management">
+		SELECT B.PK_SERIAL   rolePk,
+		       B.ROLE_ID     roleId,
+		       B.ROLE_NAME   roleName
+		  FROM SYSTEM_ROLE_INFO B
+		 WHERE B.VALID_FLAG = '0'
+		   AND B.SYSTEM_ID = #{systemId}
+		 ORDER BY PK_SERIAL
+	</select>
+	
+	<!-- 基础信息管理-菜单管理-菜单信息list查询  -->
+	<select id="getMenuList" parameterType="String" resultType="Management">
+		SELECT A.PK_SERIAL   menuPk,
+		       A.MENU_ID     menuId,
+		       A.MENU_NAME   menuName,
+		       A.MENU_LEVEL  menuLevel,
+		       A.MENU_URL    menuUrl,
+		       A.MENU_PRE    menuPre
+		  FROM SYSTEM_MENU_INFO A
+		 WHERE A.SYSTEM_ID = #{systemId}
+		   AND A.VALID_FLAG = '0'
+		 ORDER BY A.MENU_ID
+	</select>
+	
+	
+	<!-- 基础信息管理-操作管理-查询操作权限 list查询-->
+	<select id="getOpList" parameterType="map" resultType="Management">
+		 select pk_serial     pkSerial,
+				operate_id    operateId,
+				operate_name  operateName
+		   from SYSTEM_OPERATE_INFO
+		  where system_id = #{systemId}
+		    and valid_flag = '0'
+	</select>
+	
+	<!-- 基础信息管理-用户管理-重置密码 -->
+    <update id="resetPassword"  parameterType="Common">
+       <![CDATA[
+         update system_user_info a
+            set a.password_no = #{newPasswordNo},
+            	updated_user = #{userName},
+            	updated_date = sysdate
+          where pk_serial = #{pkSerial}
+            and system_id = #{systemId}
+            and valid_flag = '0'
+       ]]>
+    </update>
+	
+	<!-- 基础信息管理-用户管理-1.查询用户名是否存在 -->
+	<select id="checkUserName" parameterType="Common"
+		resultType="java.lang.Integer">
+		select count(*)
+		from system_user_info
+		where account_id = #{accountId}
+		and system_id = #{systemId}
+		and valid_flag = '0'
+	</select>
+	
+    <!-- 基础信息管理-用户管理-2.插入新的用户,默认密码是1-->
+	<insert id="insertNewUser" parameterType="Common">
+       <![CDATA[
+       INSERT INTO SYSTEM_USER_INFO
+			  (PK_SERIAL,
+			   SYSTEM_ID,
+			   ACCOUNT_ID,
+			   account_name,
+			   PASSWORD_NO,
+			   VALID_FLAG,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE)
+			VALUES
+			  (SEQ_SYSTEM_USER_PK.NEXTVAL,
+			   #{systemId},
+			   #{accountId},
+			   #{accountName},
+			   'c4ca4238a0b923820dcc509a6f75849b',
+			   '0',
+			   #{userName},
+			   SYSDATE,
+			   #{userName},
+			   SYSDATE)
+    	]]>
+	</insert>
+	
+	<!--  基础信息管理-用户管理-删除(更新valid_flag=1)用户  -->
+    <update id="deleteUser"  parameterType="Common">
+       <![CDATA[
+         update system_user_info
+            set valid_flag = '1',
+            	updated_user=#{userName},
+            	updated_date=sysdate
+          where pk_serial = #{pkSerial}
+            and system_id = #{systemId}
+            and valid_flag = '0'
+       ]]>
+    </update>
+    
+    <!-- 基础信息管理-用户管理-恢复(更新valid_flag=0)用户 -->
+    <update id="regainUser"  parameterType="Common">
+       <![CDATA[
+         update system_user_info
+            set valid_flag = '0',
+            	updated_user=#{userName},
+            	updated_date=sysdate
+          where pk_serial = #{pkSerial}
+       ]]>
+    </update>
+    
+    <!-- 基础信息管理-角色管理-1.查询角色ID是否存在 -->
+	<select id="checkRoleId" parameterType="Common"
+		resultType="java.lang.Integer">
+		select count(*)
+		from system_role_info
+		where role_id = #{roleId}
+		and system_id = #{systemId}
+		and valid_flag = '0'
+	</select>
+	
+	<!-- 基础信息管理-角色管理-2.新增新角色 -->
+	<insert id="insertNewRole" parameterType="Common">
+       <![CDATA[
+       INSERT INTO SYSTEM_ROLE_INFO
+			  (PK_SERIAL,
+			   SYSTEM_ID,
+			   ROLE_ID,
+			   ROLE_NAME,
+			   VALID_FLAG,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE)
+			VALUES
+			  (SEQ_SYSTEM_ROLE_PK.NEXTVAL,
+			   #{systemId},
+			   #{roleId},
+			   #{roleName},
+			   '0',
+			   #{userName},
+			   SYSDATE,
+			   #{userName},
+			   SYSDATE)
+    	]]>
+	</insert>
+	
+	<!-- 基础信息管理-角色管理-删除角色 -->
+    <update id="deleteRole"  parameterType="Common">
+       <![CDATA[
+         update system_role_info
+            set valid_flag = '1',
+            	updated_user=#{userName},
+            	updated_date=sysdate
+          where pk_serial = #{rolePk}
+            and system_id = #{systemId}
+            and valid_flag = '0'
+       ]]>
+    </update>
+	
+    <!-- 基础信息管理-菜单管理-1.查询菜单ID是否存在 -->
+	<select id="checkMenuId" parameterType="Common"
+		resultType="java.lang.Integer">
+		select count(*)
+		from system_menu_info
+		where menu_id = #{menuId}
+		and system_id = #{systemId}
+		and valid_flag = '0'
+	</select>
+	
+	<!-- 基础信息管理-菜单管理-2.新增菜单 -->
+	<insert id="insertNewMenu" parameterType="Common">
+       <![CDATA[
+       INSERT INTO SYSTEM_MENU_INFO
+			  (PK_SERIAL,
+			   SYSTEM_ID,
+			   MENU_ID,
+			   MENU_NAME,
+			   MENU_LEVEL,
+			   MENU_URL,
+			   MENU_PRE,
+			   VALID_FLAG,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE)
+			VALUES
+			  (SEQ_SYSTEM_MENU_PK.NEXTVAL,
+			   #{systemId},
+			   #{menuId},
+			   #{menuName},
+			   #{menuLevel},
+			   #{menuUrl},
+			   #{menuPre},
+			   '0',
+			   #{userName},
+			   SYSDATE,
+			   #{userName},
+			   SYSDATE)
+    	]]>
+	</insert>
+	
+	<!-- 基础信息管理-菜单管理-删除菜单 -->
+    <update id="deleteMenu"  parameterType="Common">
+       <![CDATA[
+         update system_menu_info
+            set valid_flag = '1',
+            	updated_user=#{userName},
+            	updated_date=sysdate
+          where pk_serial = #{menuPk}
+            and system_id = #{systemId}
+            and valid_flag = '0'
+       ]]>
+    </update>
+	
+    <!-- 基础信息管理-操作管理-1.查询操作ID是否存在 -->
+	<select id="checkOpId" parameterType="Common" resultType="java.lang.Integer">
+		select count(*)
+		from system_operate_info
+		where operate_id = #{operateId}
+		and system_id = #{systemId}
+		and valid_flag = '0'
+	</select>
+	
+    <!-- 基础信息管理-操作管理-2.新增新操作 -->
+	<insert id="insertNewOp" parameterType="Common">
+       <![CDATA[
+       INSERT INTO SYSTEM_OPERATE_INFO
+			  (PK_SERIAL,
+			   SYSTEM_ID,
+			   OPERATE_ID,
+			   OPERATE_NAME,
+			   VALID_FLAG,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE)
+			VALUES
+			  (SEQ_SYSTEM_OP_PK.NEXTVAL,
+			   #{systemId},
+			   #{operateId},
+			   #{operateName},
+			   '0',
+			   #{userName},
+			   SYSDATE,
+			   #{userName},
+			   SYSDATE)
+    	]]>
+	</insert>
+	
+	<!-- 基础信息管理-操作管理-删除操作 -->
+    <update id="deleteOp"  parameterType="Common">
+       <![CDATA[
+         update system_OPERATE_info
+            set valid_flag = '1',
+            	updated_user=#{userName},
+            	updated_date=sysdate
+          where pk_serial = #{pkSerial}
+            and system_id = #{systemId}
+            and valid_flag = '0'
+       ]]>
+    </update>
+    
+   <!-- 用户权限管理-用户角色管理-获取用户对应的角色信息list -->
+	<select id="getUserRoleList" parameterType="String" resultType="Management">
+		SELECT A.PK_SERIAL userPk, 
+			   A.ACCOUNT_ID userId, 
+			   A.ACCOUNT_NAME accountName,
+			   B.PK_SERIAL AS rolePk, 
+			   B.ROLE_ID roleId,
+			   B.ROLE_NAME roleName
+		  FROM SYSTEM_USER_INFO A, SYSTEM_ROLE_INFO B, USER_ROLE_INFO C
+		 WHERE A.PK_SERIAL = C.ACCOUNT_ID
+		   AND B.PK_SERIAL = C.ROLE_ID
+		   AND A.SYSTEM_ID = #{systemId}
+		   AND A.VALID_FLAG = '0'
+		   AND B.VALID_FLAG = '0'
+		   AND C.VALID_FLAG = '0'
+		 ORDER BY A.ACCOUNT_ID, A.ACCOUNT_ID
+	</select>
+	
+	<!-- 用户权限管理-角色菜单管理-获取角色对应菜单信息list -->
+	<select id="getRoleMenuList" parameterType="String"
+		resultType="Management">
+		SELECT B.PK_SERIAL  AS rolePk,
+		       B.ROLE_ID roleId,
+		       B.ROLE_NAME roleName,
+		       A.PK_SERIAL  AS menuPk,
+		       A.MENU_ID menuId,
+		       A.MENU_NAME menuName,
+		       A.MENU_LEVEL menuLevel,
+		       A.MENU_URL menuUrl,
+		       A.MENU_PRE menuPre
+		  FROM SYSTEM_MENU_INFO A, SYSTEM_ROLE_INFO B, MENU_ROLE_INFO C
+		 WHERE A.PK_SERIAL = C.MENU_ID
+		   AND B.PK_SERIAL = C.ROLE_ID
+		   AND A.SYSTEM_ID = #{systemId}
+		   AND B.SYSTEM_ID = A.SYSTEM_ID
+		   AND A.VALID_FLAG = '0'
+		   AND B.VALID_FLAG = '0'
+		   AND C.VALID_FLAG = '0'
+		 ORDER BY B.PK_SERIAL, A.MENU_ID
+	</select>
+	
+	 <!-- 用户权限管理-角色操作管理-获取角色操作list-->
+	<select id="getOpRoleList" parameterType="map"
+		resultType="Management">
+		SELECT A.PK_SERIAL    PKSERIAL,
+		       A.OPERATE_ID   OPERATEID,
+		       C.OPERATE_NAME OPERATENAME,
+		       A.ROLE_ID      ROLEPK,
+		       B.ROLE_ID      ROLEID,
+		       B.ROLE_NAME    ROLENAME
+		  FROM OPERATE_ROLE_INFO A, SYSTEM_ROLE_INFO B, SYSTEM_OPERATE_INFO C
+		 WHERE B.SYSTEM_ID = #{systemId}
+		   AND C.SYSTEM_ID = B.SYSTEM_ID
+		   AND A.OPERATE_ID = C.PK_SERIAL
+		   AND A.ROLE_ID = B.PK_SERIAL
+		   AND A.VALID_FLAG = '0'
+		   AND B.VALID_FLAG = '0'
+		   AND C.VALID_FLAG = '0'
+		 ORDER BY A.ROLE_ID, A.OPERATE_ID
+	</select>
+	
+	<!-- 用户权限管理-用户角色管理-1.查询用户关系是否存在 -->
+	<select id="checkUserRole" parameterType="Common"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM SYSTEM_USER_INFO A, USER_ROLE_INFO B
+		 WHERE A.ACCOUNT_ID = #{accountId}
+		   AND A.SYSTEM_ID = #{systemId}
+		   AND A.VALID_FLAG = '0'
+		   AND B.VALID_FLAG = '0'
+		   AND B.ACCOUNT_ID = A.PK_SERIAL
+		   AND B.ROLE_ID = #{roleId}
+	</select>
+	
+	<!-- 用户权限管理-用户角色管理-2.新增用户角色关系 -->
+	<insert id="insertNewUserRole" parameterType="Common">
+       <![CDATA[
+		INSERT INTO USER_ROLE_INFO
+			  (PK_SERIAL,
+			   ACCOUNT_ID,
+			   ROLE_ID,
+			   VALID_FLAG,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE)
+			VALUES
+			  (SEQ_USER_ROLE_PK.NEXTVAL,
+			   #{accountId},
+			   #{roleId},
+			   '0',
+			   #{userName},
+			   SYSDATE,
+			   #{userName},
+			   SYSDATE)
+		 ]]>
+	</insert>
+	
+	<!-- 用户权限管理-用户角色管理-删除用户关系 -->
+    <update id="deleteUserRole"  parameterType="Common">
+       <![CDATA[
+         update user_role_info
+            set valid_flag = '1',
+            	updated_user=#{userName},
+            	updated_date=sysdate
+          where account_id = #{pkSerial}
+            and role_id = #{rolePk}
+            and valid_flag = '0'
+       ]]>
+    </update>
+    
+	<!-- 用户权限管理-角色菜单管理-1.查询角色菜单关系是否存在 -->
+	<select id="checkRoleMenu" parameterType="Common"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM MENU_ROLE_INFO
+		 WHERE ROLE_ID = #{rolePk}
+		   AND MENU_ID = #{menuPk}　
+		   AND VALID_FLAG = '0'
+	</select>
+
+	<!-- 用户权限管理-角色菜单管理-2.新增用户角色关系 -->
+	<insert id="insertRoleMenu" parameterType="Common">
+       <![CDATA[
+		INSERT INTO MENU_ROLE_INFO
+			  (PK_SERIAL,
+			   MENU_ID,
+			   ROLE_ID,
+			   VALID_FLAG,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE)
+			VALUES
+			  (SEQ_MENU_ROLE_PK.NEXTVAL,
+			   #{menuPk},
+			   #{rolePk},
+			   '0',
+			   #{userName},
+			   SYSDATE,
+			   #{userName},
+			   SYSDATE)
+		 ]]>
+	</insert>
+
+    <!-- 用户权限管理-角色菜单管理-删除角色菜单关系 -->
+    <update id="deleteRoleMenu"  parameterType="Common">
+       <![CDATA[
+         update menu_role_info
+            set valid_flag = '1',
+            	updated_user=#{userName},
+            	updated_date=sysdate
+          where menu_id = #{menuPk}
+            and role_id = #{rolePk}
+            and valid_flag = '0'
+       ]]>
+    </update>
+	
+	<!-- 用户权限管理-角色操作管理-1.查询角色是否已经配有权限 -->
+	<select id="checkRoleOpList" parameterType="map"
+		resultType="Integer">
+		select count(*)
+		  from OPERATE_ROLE_INFO
+		 where role_id = #{rolePk}
+		   and valid_flag = '0'
+	</select>
+
+	<!-- 用户权限管理-角色操作管理-2.添加新授权关系 -->
+	<insert id="insertRoleOp" parameterType="map">
+		INSERT INTO OPERATE_ROLE_INFO
+			  (pk_serial,
+			   operate_id,
+			   role_id,
+			   VALID_FLAG,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE)
+			VALUES
+			  (SEQ_OPERATE_ROLE_PK.NEXTVAL,
+			   #{opPk},
+			   #{rolePk},
+			   '0',
+			   #{userName},
+			   sysdate,
+			   #{userName},
+			   sysdate)
+    </insert>
+
+	<!--用户权限管理-角色操作管理-删除角色权限关系 -->
+    <update id="deleteRoleOp"  parameterType="Common">
+       <![CDATA[
+         update OPERATE_ROLE_INFO
+            set valid_flag = '1',
+            	updated_user=#{userName},
+            	updated_date=sysdate
+          where role_id = #{rolePk}
+            and valid_flag = '0'
+       ]]>
+    </update>
+    
+    <!-- 用户登录校验-获取一个用户所有的权限list，存到session中-->
+    <select id="getUserAllOpList" parameterType="Common" resultType="Management">
+		<![CDATA[
+		SELECT a.account_id accountId, 'ROLES' mark, to_char(wm_concat(b.role_id)) value
+		  FROM system_user_info a, system_role_info b, user_role_info c
+		 where a.pk_serial = c.account_id
+		   and b.pk_serial = c.role_id
+		   and a.account_id = #{accountId}
+		   and a.valid_flag = '0'
+		   and b.valid_flag = '0'
+		   and c.valid_flag = '0'
+		   and a.system_id = #{systemId}
+		   and b.system_id = #{systemId}
+		 group by a.account_id
+		union
+		select t1.account_id accountId,
+		       'FUND_'||t1.role_id mark,
+		       to_char(wm_concat(t2.port_code)) value
+		  from (SELECT a.account_id, b.role_id
+		          FROM system_user_info a, system_role_info b, user_role_info c
+		         where a.pk_serial = c.account_id
+		           and b.pk_serial = c.role_id
+		           and a.account_id = #{accountId}
+		           and a.valid_flag = '0'
+		           and b.valid_flag = '0'
+		           and c.valid_flag = '0'
+		           and a.system_id = #{systemId}
+		           and b.system_id = #{systemId}) t1
+		  left join user_product_role t2
+		    on t1.role_id = t2.role_id
+		   and t1.account_id = t2.account_id
+		   and sysdate <= to_date(t2.end_date, 'yyyyMMdd')
+		 group by t1.account_id, t1.role_id
+		union
+		SELECT account_id accountId, 'OPS' mark, to_char(wm_concat(operate_id)) value
+		  FROM (SELECT distinct a.account_id, d.operate_id
+		          FROM system_user_info    a,
+		               system_role_info    b,
+		               user_role_info      c,
+		               system_operate_info d,
+		               operate_role_info   e
+		         where a.pk_serial = c.account_id
+		           and b.pk_serial = c.role_id
+		           and d.pk_serial = e.operate_id
+		           and b.pk_serial = e.role_id
+		           and a.account_id = #{accountId}
+		           and a.valid_flag = '0'
+		           and b.valid_flag = '0'
+		           and c.valid_flag = '0'
+		           and d.valid_flag = '0'
+		           and e.valid_flag = '0'
+		           and a.system_id = #{systemId}
+		           and b.system_id = #{systemId}
+		           and d.system_id = #{systemId})
+		 group by account_id
+		union
+		select account_id accountId,
+		       'FUND_QUERY' mark,
+		       case
+		         when instr(roles, 'FA_MANAGER') > 0 then
+		          (select to_char(wm_concat(a.vc_fund_code))
+		             from tfundinfo a
+		            where a.c_fund_status = '2')
+		         when instr(roles, 'FA_ZH_LEADER') > 0 then
+		          (select to_char(wm_concat(a.vc_fund_code))
+		             from tfundinfo a
+		            where a.c_fund_status = '2'
+		              and a.c_need_fa = '2')
+		         when instr(roles, 'FA_GM_LEADER') > 0 then
+		          (select to_char(wm_concat(a.vc_fund_code))
+		             from tfundinfo a
+		            where a.c_fund_status = '2'
+		              and a.c_need_fa = '1')
+		         else
+		          (select to_char(wm_concat(t2.port_code)) value
+		             from (SELECT a.account_id, b.role_id
+		                     FROM system_user_info a,
+		                          system_role_info b,
+		                          user_role_info   c
+		                    where a.pk_serial = c.account_id
+		                      and b.pk_serial = c.role_id
+		                      and a.account_id = #{accountId}
+		                      and b.role_id = 'FA_OP'
+		                      and a.valid_flag = '0'
+		                      and b.valid_flag = '0'
+		                      and c.valid_flag = '0'
+		                      and a.system_id = #{systemId}
+		                      and b.system_id = #{systemId}) t1
+		             left join user_product_role t2
+		               on t1.role_id = t2.role_id
+		              and t1.account_id = t2.account_id
+		              and sysdate <= to_date(t2.end_date, 'yyyyMMdd'))
+		       end as roles
+		  from (SELECT to_char(wm_concat(b.role_id)) roles, a.account_id
+		          FROM system_user_info a, system_role_info b, user_role_info c
+		         where a.pk_serial = c.account_id
+		           and b.pk_serial = c.role_id
+		           and a.account_id = #{accountId}
+		           and a.valid_flag = '0'
+		           and b.valid_flag = '0'
+		           and c.valid_flag = '0'
+		           and a.system_id = #{systemId}
+		           and b.system_id = #{systemId}
+		         group by a.account_id)
+		]]>
+	</select>
+
+	<!-- 获取拥有某权限的用户信息 -->
+	<select id="getUserOpList" parameterType="map" resultType="Management">
+		SELECT DISTINCT (A.ACCOUNT_ID) userName, A.PK_SERIAL userPk, A.account_name accountName
+		  FROM SYSTEM_USER_INFO    A,
+		  	   SYSTEM_ROLE_INFO    B,
+		       USER_ROLE_INFO      D
+		 WHERE A.PK_SERIAL = D.ACCOUNT_ID
+		   AND D.ROLE_ID = B.PK_SERIAL
+		   <if test="roleId != null and roleId!=''">
+		   AND B.ROLE_ID in (${roleId})
+		   </if>
+		   AND A.SYSTEM_ID = #{systemId}
+		   AND A.VALID_FLAG = '0'
+		   AND D.VALID_FLAG = '0'
+		 ORDER BY A.ACCOUNT_ID
+	</select>
+	
+	<!-- 获取用户操作权限 -->
+	<select id="getUserOpsList" parameterType="map" resultType="Management">
+	   SELECT distinct a.account_id userId, d.operate_id operateId,  d.operate_name operateName
+              FROM system_user_info    a,
+                   system_role_info    b,
+                   user_role_info      c,
+                   system_operate_info d,
+                   operate_role_info   e
+             where a.pk_serial = c.account_id
+               and b.pk_serial = c.role_id
+               and d.pk_serial = e.operate_id
+               and b.pk_serial = e.role_id
+                and a.valid_flag = '0'
+		           and b.valid_flag = '0'
+		           and c.valid_flag = '0'
+		           and d.valid_flag = '0'
+		           and e.valid_flag = '0'
+		           and a.system_id = #{systemId}
+                   and a.account_id = #{userName}
+	</select>
+	
+    <!-- 获取基金列表信息 -->
+	<!-- <select id="getFundList" resultType="Management">
+		SELECT T.VC_FUND_CODE fundCode, 
+		       T.VC_FUND_NAME fundName
+		  FROM TFUNDINFO T
+		 WHERE T.C_FUND_STATUS = '2'
+		 ORDER BY T.VC_FUND_CODE
+	</select> -->
+	
+	<!-- 获取产品授权信息 -->
+	<!-- <select id="getUserProductList" parameterType="map" resultType="Management">
+		SELECT T.SEQ_NO       pkSerial,
+		       T.ACCOUNT_ID   userId,
+		       B.ACCOUNT_NAME accountName,
+		       T.PORT_CODE    fundCode,
+		       T.PORT_NAME    fundName,
+		       T.BEG_DATE     begDateString,
+		       T.END_DATE     endDateString,
+		       T.ISGRANT      isGrant,
+		       A.GRANT_BY     grantBy,
+		       T.GRANT_SEQ_NO grantSeq,
+		       T.ROLE_ID      roleId,
+		       C.ROLE_NAME    roleName
+		  FROM USER_PRODUCT_ROLE T
+		  LEFT JOIN USER_PRODUCT_GRANT A
+		    ON A.SEQ_NO = T.GRANT_SEQ_NO
+		   AND A.GRANT_USER = T.ACCOUNT_ID
+		  LEFT JOIN SYSTEM_USER_INFO B
+		    ON B.SYSTEM_ID='FIBMS'
+		   AND B.VALID_FLAG='0'
+		   AND B.ACCOUNT_ID = T.ACCOUNT_ID
+		  LEFT JOIN SYSTEM_ROLE_INFO C
+		    ON C.ROLE_ID = T.ROLE_ID
+		   AND C.SYSTEM_ID='FIBMS'
+		 WHERE T.VALID_FLAG = '0'
+		   AND T.BEG_DATE &lt;= TO_CHAR(SYSDATE, 'yyyyMMdd')
+		   AND T.END_DATE &gt;= TO_CHAR(SYSDATE, 'yyyyMMdd')
+		   AND T.SYSTEM_ID = 'FIBMS'
+		   <if test="isGrant != null">
+		   AND T.ISGRANT = #{isGrant}
+		   </if>
+		   <if test="roleId != null">
+		   AND T.ROLE_ID in (${roleId})
+		   </if>
+		   <if test="userId != null">
+		   AND T.ACCOUNT_ID = #{userId}
+		   </if>
+		   <if test="fundCode != null">
+	       AND T.PORT_CODE = #{fundCode}
+	       </if>
+		 ORDER BY T.ACCOUNT_ID, T.PORT_CODE
+	</select> -->
+	
+	<!-- 查询用户是否存在用户产品关系表中-->
+	<!-- <select id="checkUserProduct" parameterType="String"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM USER_PRODUCT_ROLE
+		 WHERE account_id = #{userId}
+		   AND valid_flag = '0'
+		   AND ISGRANT ='1'
+		   AND system_id = #{systemId}
+		   AND ROLE_ID = #{roleId}
+		   AND end_date>=to_char(sysdate,'yyyyMMdd')
+	</select> -->
+	
+	<!-- 添加新用户产品权限 -->
+	<!-- <insert id="insertUserProduct" parameterType="Management">
+       <![CDATA[
+		INSERT INTO USER_PRODUCT_ROLE
+			  (SEQ_NO,
+			   ACCOUNT_ID,
+			   PORT_CODE,
+			   PORT_NAME,
+			   BEG_DATE,
+			   END_DATE,
+			   ISGRANT,
+			   VALID_FLAG,
+			   GRANT_SEQ_NO,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE,
+			   SYSTEM_ID,
+			   ROLE_ID)
+			VALUES
+			  (SEQ_USEPRODUCT.NEXTVAL,
+			   #{userId},
+			   #{fundCode},
+			   (SELECT VC_FUND_NAME FROM TFUNDINFO WHERE VC_FUND_CODE = #{fundCode}),
+			   #{begDateString},
+			   #{endDateString},
+			   #{isGrant},
+			   '0',
+			   #{grantSeq},
+			   #{userName},
+			   sysdate,
+			   #{userName},
+			   sysdate,
+			   #{systemId},
+			   #{roleId})
+    	]]>
+    </insert> -->
+    
+    <!-- 添加新用户产品权限，基金经理专用 -->
+	<!-- <insert id="insertUserProduct2" parameterType="Management">
+       <![CDATA[
+		INSERT INTO USER_PRODUCT_ROLE
+			  (SEQ_NO,
+			   ACCOUNT_ID,
+			   PORT_CODE,
+			   PORT_NAME,
+			   BEG_DATE,
+			   END_DATE,
+			   ISGRANT,
+			   VALID_FLAG,
+			   GRANT_SEQ_NO,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE,
+			   SYSTEM_ID,
+			   ROLE_ID)
+			VALUES
+			  (SEQ_USEPRODUCT.NEXTVAL,
+			   (select account_id from system_user_info where account_name=#{userId}),
+			   #{fundCode},
+			   (SELECT VC_FUND_NAME FROM TFUNDINFO WHERE VC_FUND_CODE = #{fundCode}),
+			   #{begDateString},
+			   #{endDateString},
+			   #{isGrant},
+			   '0',
+			   #{grantSeq},
+			   #{userName},
+			   sysdate,
+			   #{userName},
+			   sysdate,
+			   #{systemId},
+			   #{roleId})
+    	]]>
+    </insert> -->
+    
+    <!--根据角色删除用户产品关系表 -->
+    <!-- <update id="deleteUserProductByRole" parameterType="Management">
+        delete from USER_PRODUCT_ROLE T
+		 WHERE T.VALID_FLAG = '0'
+		   AND T.ROLE_ID = #{roleId}
+    </update> -->
+    
+    <!-- 更新用户产品权限 -->
+    <!-- <update id="updateUserProduct"  parameterType="String">
+        UPDATE USER_PRODUCT_ROLE T
+           SET T.END_DATE = TO_CHAR(SYSDATE-1,'yyyyMMdd'),
+           	   T.UPDATED_USER = #{userName},
+           	   T.UPDATED_DATE = sysdate
+		 WHERE T.VALID_FLAG = '0'
+		   AND T.BEG_DATE &lt;= TO_CHAR(SYSDATE, 'yyyyMMdd')
+		   AND T.END_DATE &gt;= TO_CHAR(SYSDATE, 'yyyyMMdd')
+		   AND T.ISGRANT = #{isGrant}
+		   AND T.ACCOUNT_ID = #{userId}
+		   AND T.PORT_CODE IN (${updateCodes})
+		   AND T.SYSTEM_ID = #{systemId}
+		   AND T.ROLE_ID = #{roleId}
+    </update> -->
+    
+    <!-- 获取尚未有用户管理的产品列表 -->
+	<!-- <select id="getNoUserProduct" resultType="Management" parameterType="map">
+    	SELECT A.VC_FUND_CODE FUNDCODE, 
+		       A.VC_FUND_NAME FUNDNAME
+		  FROM TFUNDINFO A
+		 WHERE A.VC_FUND_CODE NOT IN
+		       (SELECT DISTINCT (T.PORT_CODE)
+		          FROM USER_PRODUCT_ROLE T
+		         WHERE T.VALID_FLAG = '0'
+		           AND T.BEG_DATE &lt;= TO_CHAR(SYSDATE, 'yyyyMMdd')
+		           AND T.END_DATE &gt;= TO_CHAR(SYSDATE, 'yyyyMMdd')
+		           AND T.SYSTEM_ID = #{systemId}
+		           AND T.ROLE_ID = #{opId})
+		   AND A.C_FUND_STATUS = '2'
+		 ORDER BY A.VC_FUND_CODE
+	</select> -->
+	
+	<!-- 查询授权表中是否有已经确定的授权-->
+	<!-- <select id="checkHisGrant" parameterType="Management"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM USER_PRODUCT_GRANT
+		 WHERE grant_user = #{grantUser}
+		   AND grant_by = #{grantBy}
+		   AND valid_flag = '0'
+		   AND end_date>=to_char(sysdate,'yyyyMMdd')
+	</select> -->
+	
+	<!-- 添加新授权关系-->
+<!-- 	<insert id="insertNewGrant" parameterType="Management">
+		INSERT INTO USER_PRODUCT_GRANT
+			  (SEQ_NO,
+			   GRANT_USER,
+			   GRANT_BY,
+			   BEG_DATE,
+			   END_DATE,
+			   VALID_FLAG,
+			   CREATED_USER,
+			   CREATED_DATE,
+			   UPDATED_USER,
+			   UPDATED_DATE)
+			VALUES
+			  (#{sequence},
+			   #{grantUser},
+			   #{grantBy},
+			   #{begDateString},
+			   #{endDateString},
+			   '0',
+			   #{userName},
+			   sysdate,
+			   #{userName},
+			   sysdate)
+    </insert>
+    
+    <select id="getGrantSeq" resultType="String">
+    	SELECT SEQ_USEPRODUCT_LOG.NEXTVAL from DUAL
+    </select>
+    
+    <select id="getGrantByList" parameterType="map" resultType="Management">
+	    SELECT c.account_name   grantBy,
+	    	   d.account_name grantUser, 
+	    	   A.PORT_CODE  fundCode, 
+	    	   A.PORT_NAME  fundName, 
+	    	   A.BEG_DATE   begDateString, 
+	    	   A.END_DATE   endDateString,
+	    	   B.SEQ_NO     sequence
+		  FROM USER_PRODUCT_ROLE A, USER_PRODUCT_GRANT B, system_user_info c,system_user_info d
+		 WHERE A.GRANT_SEQ_NO = B.SEQ_NO
+		   AND A.ISGRANT = '0'
+		   and c.system_id = A.SYSTEM_ID
+		   and d.system_id = A.SYSTEM_ID
+		   and c.account_id = b.grant_by
+		   and d.account_id = b.grant_user
+		   and c.valid_flag='0'
+		   and d.valid_flag='0'
+		   AND A.BEG_DATE &lt;= TO_CHAR(SYSDATE, 'yyyyMMdd')
+		   AND A.END_DATE &gt;= TO_CHAR(SYSDATE, 'yyyyMMdd')
+		   AND A.SYSTEM_ID = #{systemId}
+		   <if test="roleId!=null">
+		   AND A.ROLE_ID = #{roleId}
+		   </if>
+		   <if test="userId!=null">
+		   AND B.GRANT_BY = #{userId}
+		   </if>
+		 ORDER BY B.GRANT_BY,B.GRANT_USER
+	</select> -->
+	
+	
+	<!-- 更新用户产品权限 -->
+   <!--  <update id="updateGrant"  parameterType="map">
+        UPDATE USER_PRODUCT_ROLE T
+           SET T.END_DATE = TO_CHAR(SYSDATE-1,'yyyyMMdd'),
+           	   T.UPDATED_USER = #{userName},
+           	   T.UPDATED_DATE = sysdate
+		 WHERE T.VALID_FLAG = '0'
+		   AND T.ACCOUNT_ID in (select account_id from system_user_info where account_name=#{grantUser})
+		   AND T.ISGRANT = '0'
+		   AND T.SYSTEM_ID = #{systemId}
+		   AND T.GRANT_SEQ_NO =#{seqNo}
+		   AND T.ROLE_ID = #{roleId}
+    </update> -->
+    
+    <!-- 取消用户产品授权 -->
+   <!--  <update id="deleteGrant"  parameterType="map">
+        UPDATE USER_PRODUCT_GRANT T
+           SET T.END_DATE = TO_CHAR(SYSDATE-1,'yyyyMMdd'),
+           	   T.UPDATED_USER = #{userName},
+           	   T.UPDATED_DATE = sysdate
+		 WHERE T.VALID_FLAG = '0'
+		   AND T.SEQ_NO =#{seqNo}
+    </update> -->
+	
+   
+    
+	<!--  <select id="getOperateIdByProductflag" parameterType="map"
+		resultType="Management">
+		SELECT A.OPERATE_ID operateId
+		  FROM SYSTEM_OPERATE_INFO A
+		 WHERE A.PRODUCT_FLAG = #{productFlag}
+		   AND a.valid_flag='0'
+	</select> -->
+</mapper>    

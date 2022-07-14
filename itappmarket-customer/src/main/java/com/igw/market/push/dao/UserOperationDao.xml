@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.igw.market.push.dao.UserOperationDao">
+	
+    <select id="getOpenation" resultType="com.igw.market.push.dto.UserOperationDTO">
+		    select case op_type
+		         when '01' then
+		          '年度账单'
+		         when '02' then
+		          '月度账单'
+		       end name,
+		       count(*) personCount,
+		       sum(op_count) sumCount,
+		       max(op_count) maxCount
+		  from wx_user_operation
+		 where VALID_FLAG = '0'
+		 group by op_type
+
+    </select>
+   
+	
+</mapper>

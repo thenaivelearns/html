@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.igw.self-deploy:epip_client:4.3.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/self-deploy/epip_client/4.3.1/epip_client-4.3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/self-deploy/epip_client/4.3.1/epip_client-4.3.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/self-deploy/epip_client/4.3.1/epip_client-4.3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

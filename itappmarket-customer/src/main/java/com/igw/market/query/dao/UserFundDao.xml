@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.igw.market.query.dao.UserFundDao">
+    <select id="queryUserFund" resultType="com.igw.market.query.domain.dto.UserFund" parameterType="com.igw.market.push.vo.UserPushVO">
+        SELECT  DISTINCT cust.OPEN_ID openId,
+                cust.c_custno custNo,
+                cust.c_custname userName,
+                identity_id identityNo,
+                cust.C_FUNDCODE fundCode,
+                cust.F_REALSHARES realshares,
+                fd.F_NETVALUE netValue,
+                cust.F_REALSHARES*fd.F_NETVALUE holdingAmount
+        FROM (
+        SELECT a.OPEN_ID, b.c_custno,b.c_custname,a.identity_id , sum(d.F_REALSHARES) F_REALSHARES ,d.C_FUNDCODE FROM
+             wechat_user_info a left join tcustomerinfo b on b.c_identityno = a.identity_id
+            left join taccoinfo c
+            on b.c_custno = c.c_custno
+            left join tstaticshares d
+            on c.c_fundacco = d.c_fundacco
+            WHERE valid_flag = '0'
+            and length(a.identity_id) = 18
+            and d.F_REALSHARES > '0'
+            <if test="userName != null and userName != ''">
+                and  b.c_custname like '%${userName}%'
+            </if>
+            <if test="fundCode != null and fundCode != ''">
+                and d.C_FUNDCODE = #{fundCode}
+            </if>
+            <if test="fundCodes != null">
+                and d.C_FUNDCODE IN
+                <foreach collection="fundCodes" open="(" separator="," close=")" item="fundCode" >
+                    #{fundCode}
+                </foreach>
+            </if>
+            <if test="wechatCode != null and wechatCode != ''">
+                and wechat_code = #{wechatCode}
+            </if>
+            <if test="openIdList != null">
+                and a.OPEN_ID in
+                <foreach collection="openIdList" open="("  separator="," close=")" item="openId">
+                    #{openId}
+                </foreach>
+            </if>
+
+            group by a.identity_id ,d.C_FUNDCODE,b.c_custno,b.c_custname,a.OPEN_ID
+        ) cust left join tfundday fd on cust.C_FUNDCODE = fd.c_fundcode
+        <!--WHERE fd.d_cdate = to_date('2020-11-16 00:00:00','yyyy-mm-dd hh24:mi:ss')-->
+        <!--fd.d_cdate = trunc(sysdate-1)-->
+        WHERE fd.d_cdate = to_date(#{tDate},'yyyy-mm-dd hh24:mi:ss')
+            <if test="filterAmount != null and filterAmount != ''">
+                and cust.F_REALSHARES*fd.F_NETVALUE >= #{filterAmount}
+            </if>
+    </select>
+
+    <select id="userFundCodeByIde" parameterType="com.igw.market.query.domain.dto.UserFund" resultType="String">
+        SELECT
+        distinct C_FUNDCODE
+        FROM
+        tstaticshares
+        WHERE C_FUNDACCO IN (
+            SELECT C_FUNDACCO FROM TACCOINFO WHERE C_CUSTNO = (
+                SELECT C_CUSTNO FROM TCUSTOMERINFO WHERE C_IDENTITYNO = #{identityNo } and c_identitytype = #{identityType }
+                )
+            )
+        AND F_REALSHARES > '0'
+    </select>
+</mapper>

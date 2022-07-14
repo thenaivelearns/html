@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.igw.market.push.dao.SubscriptionStatisticsDao">
+
+  	<!-- 查询：系统数据 -->
+	<select id="getSubscriptionList" resultType="com.igw.market.push.domain.SubscriptionStatisticsDomain" parameterType="java.util.Map">
+	    SELECT pk_id                pkId,
+		       push_type            pushType,
+		       subscribe_count      subscribeCount,
+		       unsubscribe_count    unsubscribeCount,
+		       tdate                tdate,
+		       valid_flag           validFlag,
+		       created_user         createdUser,
+		       created_date         createdDate,
+		       updated_user         updatedUser,
+		       updated_date         updatedDate
+		  FROM wx_subscription_statistics
+		 WHERE VALID_FLAG = '0'
+		  <if test="pushType != null and pushType != ''">
+		  AND push_type = #{pushType}
+		  </if>
+		  <if test="startTime != null and startTime != ''">
+		   AND tdate &gt;= #{startTime}
+		  </if>
+		  <if test="endTime != null and endTime != ''">
+		   AND tdate &lt;= #{endTime}
+		  </if>
+		 ORDER BY tdate 
+	</select>  
+	
+	<!-- 新增：[订阅统计信息表]数据 -->
+	<insert id="add" parameterType="com.igw.market.push.domain.SubscriptionStatisticsDomain">
+	    <selectKey resultType="String" keyProperty="pkId" order="BEFORE">
+		   SELECT wx_subscription_statistics_PK.NEXTVAL AS pkId FROM DUAL
+		</selectKey>
+		INSERT INTO wx_subscription_statistics
+			( 
+			    pk_id,
+				push_type, 
+				subscribe_count,
+				unsubscribe_count,
+				tdate,
+				VALID_FLAG,
+				CREATED_USER,
+				CREATED_DATE
+			)
+		VALUES
+			(
+				#{pkId},
+				#{pushType},
+				#{subscribeCount},
+				#{unsubscribeCount},
+				#{tdate},
+				 '0',
+				#{createdUser},
+				sysdate
+			)
+    </insert>
+    
+    
+    <select id="selectSubscriptionCounts" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) from wx_push_config  where valid_flag = '0' and push_value = #{pushValue}  and  push_type = #{pushType}
+    
+    
+    </select>
+   
+	
+</mapper>

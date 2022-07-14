@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+    <script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+    <script type="text/javascript" src="/static/views/js/util/dateUtils.js"></script>
+	<script src="/static/views/js/home/homepage.js"></script> 
+	<script src="/static/views/js/echarts.min.js"></script> 	
+<style>
+  .el-range-separator {
+    width: 40px!important;
+  }
+  .is-selected {
+		color: #1989FA;
+	}
+	
+	.el-calendar__button-group {
+		display: none
+	}
+	
+	th {
+		 font-size: 10px;
+		  padding: 8px 0;
+	}
+	
+	.el-dialog__body {
+		padding: 10px 20px 10px 20px!important;
+	}
+	.el-dialog {
+	margin-top: 50px!important;
+	}
+	
+	.el-icon-arrow-down {
+		margin-top: 5px;
+	}
+	
+	.ellipsis .el-popover__reference {
+		background-color: #85bf9a !important;
+	}
+	.el-calendar__body {
+	  	border: solid 1px #cae2f4 !important;
+	  	padding: 0px 0.01px 0px !important;
+	}
+	.el-calendar__body thead{
+	  	background-color:#96caf1 !important;
+	}
+	.el-calendar-table {
+	width: 824px;
+	}
+	.el-calendar-table .el-calendar-day {
+		padding: 3px !important;
+		height: 72.5px !important;
+		border: solid 1px #cae2f4 !important;
+		/* width:1000px !important; */
+	}
+	.el-calendar-table thead th{
+		text-align:center !important;
+	}
+	.test1{
+		background-color: #6cb2ec!important;margin-bottom: 3px;"
+	}
+	.test2{
+	  background-color: #69bec1!important;margin-bottom: 3px;"
+	}
+	.test3{
+		background-color: #e9a846!important;margin-bottom: 3px;"
+	}
+	.test4{
+		background-color: #f56c6c!important;margin-bottom: 3px;"
+	}
+	.el-calendar{
+		padding:0 11px 0 11px;
+	}
+	.el-calendar__header{
+		display:none;
+	}
+	.el-checkbox-group {
+	   display: inline!important;
+	}
+	.el-select .el-input .el-input--suffix .is-focus {
+	      width: 120px;
+	}
+	.el-select{
+	  width: 120px!important;
+	}
+	.el-date-editor.el-input, .el-date-editor.el-input__inner {
+    width: 120px;
+}
+.el-table td, .el-table th {
+		      padding: 5px 0;
+		 }
+		 .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+  .el-pagination__editor.el-input .el-input__inner {
+    width: 40px;
+}
+.el-pagination__jump {
+margin-left: 3px;
+}
+
+.el-range-input {
+ width:80px!important;
+}
+.el-date-editor--daterange.el-input, .el-date-editor--daterange.el-input__inner, .el-date-editor--timerange.el-input, .el-date-editor--timerange.el-input__inner {
+    width: 285px;
+}
+.el-checkbox {
+margin-right: 10px;
+}
+.widget-header {
+	 min-height: 25px!important;
+	 max-height: 25px!important;
+	 padding-bottom: 4px;
+}
+.span-ellipsis {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+}
+</style>
+<title></title>
+</head>
+<body style="height: 1902px; margin: 0">
+	 <div id="app" style="overflow-y: hidden;overflow-x: hidden;margin: 0 10px 0 0px;" class="main-container"> 
+	 
+	   <!-- 左边--->
+		 <div style="width:38%; float: left;height: 860px; margin-top: 0px;margin-left: 50px" >
+			<div class="widget-box" style="margin-top: 10px;height: 380px;">
+				<div class="widget-header header-color-blue2">
+					<h4 class="lighter smaller">当前服务订阅统计</h4>
+				</div>
+				<div class="widget-body" style="height: 420px;overflow-x:auto;width:100%;">
+					<div  style="margin-top: 15px;margin-left: 35px">
+						 <el-table
+						    :data="subscriptionList"
+						    style="width: 100%"
+						     height="402"
+						      :default-sort = "{prop: 'date', order: 'descending'}"
+						     v-loading="firstDateLoading">
+						     <el-table-column
+						      label="通知名称"
+						      prop="pushName"
+						       width="250px">
+						        </el-table-column>
+						      
+						     <el-table-column
+						      label="订阅人数"
+						      prop="yCount"
+						       width="100px">
+						        </el-table-column> 
+						       <el-table-column
+						      label="退订人数"
+						      prop="nCount"
+						       width="100px">
+						        </el-table-column>
+						      <el-table-column
+						      label="总计"
+						      prop="tCount"
+						       width="100px">
+						        </el-table-column>       
+						    </el-table-column>
+							    <el-table-column  label="操作" fixed="right">
+					                   <template slot-scope="scope">
+										   <el-button size="small"  type="primary"  @click="historyInit(scope.row)">历史信息</el-button>
+										 </template> 
+					          </el-table-column> 
+						  </el-table>
+			
+					</div>
+				</div>
+			</div>
+		</div> 
+		<!--  -->
+		
+		 <!-- 左边--->
+		 <div style="width:27%; float: left;height: 860px; margin-top: 0px;margin-left: 50px" >
+			<div class="widget-box" style="margin-top: 10px;height: 380px;">
+				<div class="widget-header header-color-blue2">
+					<h4 class="lighter smaller">用户行为统计</h4>
+				</div>
+				<div class="widget-body" style="height: 420px;overflow-x:auto;width:100%;">
+					<div  style="margin-top: 15px;margin-left: 35px">
+						 <el-table
+						    :data="opList"
+						    style="width: 100%"
+						     height="402"
+						      :default-sort = "{prop: 'date', order: 'descending'}"
+						     v-loading="twoDateLoading">
+						     <el-table-column
+						      label="内容"
+						      prop="name"
+						       width="120px">
+						        </el-table-column>
+						      
+						     <el-table-column
+						      label="单人最高次数"
+						      prop="maxCount"
+						       width="100px">
+						        </el-table-column> 
+						       <el-table-column
+						      label="总查看人数"
+						      prop="personCount"
+						       width="100px">
+						        </el-table-column>
+						      <el-table-column
+						      label="总查看次数"
+						      prop="sumCount"
+						       width="100px">
+						        </el-table-column>       
+						    </el-table-column>
+							  <!--   <el-table-column  label="操作" fixed="right">
+					                   <template slot-scope="scope">
+										   <el-button size="small"  type="primary"  @click="historyInit(scope.row)">历史信息</el-button>
+										 </template> 
+					          </el-table-column>  -->
+						  </el-table>
+			
+					</div>
+				</div>
+			</div>
+		</div> 
+		<!--  -->
+		
+		
+		<el-dialog
+  :visible.sync="dialogVisible"
+  width="52%"
+  :before-close="handleClose">
+  
+  <span slot="footer" class="dialog-footer">
+  <div class="block" style="margin-top: -45px; margin-right: 590px;">
+							    <span style="font-size: 15px;">选择日期:</span> 
+							    
+							    <el-date-picker
+							      v-model="value2"
+							      type="daterange"
+							      align="right"
+							      unlink-panels
+							      range-separator="至"
+							      start-placeholder="开始日期"
+							      end-placeholder="结束日期"
+							      @change="changeStartEnd"
+							      value-format="yyyyMMdd" format="yyyyMMdd" 
+							      :picker-options="pickerOptions">
+							    </el-date-picker>
+		 </div>
+     <div id="container" style="height: 560px;margin-top: 5px"></div>
+  </span>
+</el-dialog>
+     
+		
+		
+		
+	 </div> 
+	  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

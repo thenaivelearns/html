@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.igw.market.systemInfo.dao.CommonDao">
+
+    <!-- 用户登陆验证:根据用户名及密码 校验是否存在 -->
+	<select id="checkUserInfo" parameterType="Common" resultType="java.lang.Integer">
+		  select count(*)
+			from system_user_info
+			where account_id = #{accountId}
+			and password_no = #{passwordNo}
+			and system_id = #{systemId}
+			and valid_flag = '0'
+	</select>
+	
+    <!-- 用户登陆验证:根据用户名和所属系统验证用户是否锁定 -->
+	<select id="checkUserInfoLocks" parameterType="Common" resultType="Common">
+		select u.account_id accountId,
+		       u.locks_num locksNum,
+		       u.locks_date locksDate
+		from system_user_info u
+		where valid_flag = '0' 
+		and system_id = #{systemId}
+		and account_id = #{accountId}
+	</select>
+	
+	<!-- 用户登陆验证/修改密码:(user_change_pwd_his)：根据用户查询该用户所有修改的密码-->
+    <select id="getUserChangePwdHisList" parameterType="map" resultType="Common">
+		 SELECT c.account_id accountId,
+		        c.password_no passwordNo,
+		        c.system_id systemId,
+		        c.valid_flag validFlag,
+		        c.change_date changeDate,
+		        c.created_date createdDate
+		    FROM (
+			       SELECT a.account_id,
+			              a.password_no,
+			              a.system_id,
+			              a.valid_flag,
+			              a.change_date,
+			              a.created_date,
+			              dense_RANK() OVER(PARTITION BY a.account_id, a.system_id ORDER BY a.created_date DESC) k
+			         FROM user_change_pwd_his a
+			        WHERE a.system_id = #{systemId}
+			          AND a.account_id = #{accountId}
+			         <if test="validFlag != null">
+			          AND a.valid_flag = #{validFlag}
+			         </if>
+		        )c 
+		   WHERE 4>c.k
+	</select>
+
+    <!-- 登陆进入主菜单:获取用户对应的角色信息 -->
+	<select id="getUserRoleList" parameterType="Common" resultType="Common">
+		 select c.pk_serial    rolePk,
+				c.role_id      roleId,
+				c.role_name    roleName,
+		    	b.account_name accountName
+		   from user_role_info a,
+		        system_user_info b,
+				system_role_info c
+		where a.valid_flag = '0' 
+		  and a.account_id =b.pk_serial
+		  and a.role_id = c.pk_serial
+		  and b.system_id = #{systemId}
+		  and b.account_id = #{accountId}
+		  and c.system_id = #{systemId}
+		  and b.valid_flag = '0'
+		  and c.valid_flag = '0'
+	</select>
+
+    <!-- 登陆进入主菜单:获取角色对应的菜单信息 -->
+	<select id="getRoleMenuList" parameterType="Common" resultType="Common">
+		 select distinct 
+		        b.menu_id      menuId,
+				b.menu_name    menuName,
+				b.menu_level   menuLevel,
+				b.menu_url     menuUrl,
+				b.menu_pre     menuPre
+		   from menu_role_info a,
+			    system_menu_info b,
+			    system_role_info c
+		where a.valid_flag = '0'
+		  and a.menu_id = b.pk_serial
+		  and a.role_id =c.pk_serial
+		  and b.system_id = #{systemId}
+		  and b.valid_flag = '0'
+		  and c.pk_serial in ${roleId}
+		  and c.valid_flag = '0'
+		order by b.menu_id
+	</select>
+	
+	<!--登陆进入主菜单:获取所有用户中文名 -->
+	<select id="getAllUsers" resultType="Common" parameterType="map">
+		
+		SELECT a.account_name accountName,
+		       a.account_id accountId 
+		  FROM System_User_Info a 
+	  	 WHERE a.valid_flag = '0' 
+		   and a.system_id =#{systemId}
+		 <if test="accountId != null and accountId != ''">
+		 <![CDATA[  and a.account_id <> #{accountId}]]>
+	   	 </if>
+	</select>
+	
+	<!-- 登录相关：用户修改密码 -->
+    <update id="updPassword"  parameterType="Common">
+         update system_user_info a
+            set 
+             <if test="newPasswordNo != null and newPasswordNo != ''">
+                a.password_no = #{newPasswordNo},
+             </if>
+             <if test="locksNum != null and locksNum != ''">
+                a.locks_num = #{locksNum},
+             </if>
+             <if test="locksDate != null and locksDate != ''">
+                a.locks_date = #{locksDate},
+             </if>
+	       	a.updated_date=sysdate
+          where valid_flag = '0'
+            and system_id = #{systemId}
+            and account_id = #{accountId} 
+           <if test="passwordNo != null and passwordNo != ''">
+            and password_no = #{passwordNo}
+           </if>
+    </update>
+    
+    <!-- 登录相关：用户修改密码(user_change_pwd_his)：将该用户最后一次修改密码数据失效 -->
+    <update id="updUserChangePwdHis"  parameterType="Common">
+       <![CDATA[
+         update user_change_pwd_his a
+            set a.valid_flag = '1'
+              , a.updated_user=#{accountId}
+              , a.updated_date=SYSDATE
+          where account_id = #{accountId}
+            and system_id = #{systemId}
+            and valid_flag = '0'
+       ]]>
+    </update>
+    
+    <!-- 登录相关：用户修改密码-新增历史(user_change_pwd_his)：新增一条修改密码数据 信息-->
+    <insert id="addUserChangePwdHis" parameterType="Common">
+	    INSERT INTO user_change_pwd_his
+		      (account_id,
+		       password_no,
+		       change_date,
+		       system_id,
+		       valid_flag,
+		       created_user,
+		       created_date,
+		       updated_user,
+		       updated_date)
+		VALUES
+		      (#{accountId},
+		       #{newPasswordNo},
+		       #{changeDate},
+		       #{systemId},
+		       '0',
+		       #{accountId},
+		       SYSDATE,
+		       '',
+		       '')
+	</insert>
+	
+	
+	<!-- 获取每个人每个业务的提醒数目 -->
+	<select id='getTodonumByBusi' parameterType="java.util.Map" resultType="Common">
+		select COUNT(*) mark, BUSI_TYPE busiType
+		  from todo_list
+		 WHERE ACCOUNT_ID = #{userName}
+		   and status = '0'
+		   and t_date = #{tDate}
+		 GROUP BY BUSI_TYPE
+	</select>
+	
+	<!-- 根据code查询附件配置表 -->
+	<select id="getAttachmentConfigInfo" parameterType="map"
+		resultType="Common">
+		SELECT a.file_save_code fileSaveCode,
+		       a.file_path      filePath,
+		       a.file_type      fileType,
+		       a.is_date        isDate
+		  FROM attachment_config_info a
+		 where a.valid_flag = '0'
+		   and a.file_save_code = ${fileSaveCode}
+	</select>
+	
+</mapper>    

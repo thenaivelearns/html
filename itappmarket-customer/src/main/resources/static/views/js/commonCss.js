@@ -1,0 +1,19 @@
+
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/bootstrap.min.css"  />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/font-awesome.min.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/jquery-ui-1.10.3.custom.min.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/chosen.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/datepicker.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/bootstrap-timepicker.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/daterangepicker.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/colorpicker.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/bootstrapValidator.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/googleapis-fonts.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/colorbox.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/ace.min.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/ace-rtl.min.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/ace-skins.min.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/jquery.gritter.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/igw/igw_common.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/views/assets/css/bootstrap-select.css" />');
+document.write('<link rel="stylesheet" type="text/css" href="/static/third-party/element-ui/element-ui.min.css" />');

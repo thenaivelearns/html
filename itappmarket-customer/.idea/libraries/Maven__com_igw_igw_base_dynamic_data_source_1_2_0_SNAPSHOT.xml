@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.igw:igw-base-dynamic-data-source:1.2.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-dynamic-data-source/1.2.0-SNAPSHOT/igw-base-dynamic-data-source-1.2.0-20200701.120240-7.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-dynamic-data-source/1.2.0-SNAPSHOT/igw-base-dynamic-data-source-1.2.0-20200701.120240-7-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-dynamic-data-source/1.2.0-SNAPSHOT/igw-base-dynamic-data-source-1.2.0-20200701.120240-7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

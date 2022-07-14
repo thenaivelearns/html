@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>      
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+    <script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+	<script src="/static/views/js/management/permission.js"></script> 
+	<link rel="shortcut icon" href="/static/views/igw/imgs/favicon.ico" />
+	<style type="text/css">
+	   .bords{
+	       margin: 0 25px 0 25px;
+	   }
+	</style>
+</head>
+
+<body>
+	<div class="accordion-style1 panel-group main-container" id="permissionDiv" role="tablist"
+		aria-multiselectable="true" style="margin: 0 20px 0 0px">
+		<div class="bords"><h2>系统用户权限管理</h2></div>
+		<div class="panel panel-default bords">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a class="accordion-toggle" data-toggle="collapse" @click="makeActive('collapseOne')"
+						data-parent="#accordion" href="#collapseOne"> <i
+						class="bigger-110 icon-angle-right"
+						data-icon-hide="icon-angle-down" data-icon-show="icon-angle-right"></i>
+						用户角色关系管理
+					</a>
+				</h4>
+			</div>
+			<div class="panel-collapse in" id="collapseOne" style="height: auto;">
+				<div class="panel-body">
+					<!-- 用户角色管理 -->
+					<div id="userRoleList" style="width: 600px">
+						<div id="msg1"></div>
+						<table class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th style="width: 40%">用户名</th>
+									<th style="width: 40%">角色名称</th>
+									<th style="width: 20%"></th>
+								</tr>
+							</thead>
+							<tbody>
+							    <template v-for="(item,index) in userRolelist">
+									<tr v-for="(item2,index2) in item.list">
+										<td v-if="index2==0" :rowspan="item.list.length">{{item.accountName}}</td>
+										<td>{{item2.roleName}}</td>
+										<td>
+											<div class="action-buttons">
+												<a class="red delete-user-role" href="javascript:void(0)"
+													title="删除"> <i class="icon-trash bigger-130" @click="deleteUserRole(item2)"></i>
+												</a>
+											</div>
+										</td>
+									</tr>
+								</template>
+								<tr>
+									<td>
+										<select class="form-control col-xs-1" id="userId" name="userId" v-model="userId">
+											<option value="0"></option>
+											<option v-for="item2 in userlist" :value="item2.userPk">{{item2.accountName}}</option>
+										</select>
+									</td>
+									<td>
+										<select class="form-control col-xs-1" id="rolePk" name="rolePk" v-model="role">
+											<option value="0"></option>
+											<option v-for="item3 in rolelist" :value="item3.rolePk+'/'+item3.roleName">{{item3.roleName}}
+											</option>
+										</select>
+									</td>
+									<td>
+										<div class="action-buttons">
+											<a class="blue insert-user-role" href="javascript:void(0)">
+												<i class="icon-plus bigger-130" @click="insertUserRole"></i>
+											</a>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default bords">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a class="accordion-toggle collapsed" data-toggle="collapse" @click="makeActive('collapseTwo')"
+						data-parent="#accordion" href="#collapseTwo"> <i
+						class="bigger-110 icon-angle-right"
+						data-icon-hide="icon-angle-down" data-icon-show="icon-angle-right"></i>
+						角色菜单关系管理
+					</a>
+				</h4>
+			</div>
+
+			<div class="panel-collapse collapse" id="collapseTwo"
+				style="height: 0px;">
+				<div class="panel-body">
+					<!-- 角色菜单管理 -->
+					<div id="roleMenuList" style="width: 1000px">
+						<div id="msg2"></div>
+						<table class="table table-striped table-bordered table-hover"
+							id="asdasd">
+							<thead>
+								<tr>
+									<th style="width: 15%">角色名</th>
+									<th style="width: 15%">菜单ID</th>
+									<th style="width: 15%">菜单名</th>
+									<th style="width: 15%">菜单级</th>
+									<th style="width: 15%">菜单链接</th>
+									<th style="width: 15%">上一级菜单</th>
+									<th style="width: 10%"></th>
+								</tr>
+							</thead>
+							<tbody>
+							   <template v-for="(item,index) in roleMenulist">
+									<tr v-for="(item2,index2) in item.list">
+										<td v-if="index2==0" :rowspan="item.list.length">{{item.roleName}}</td>
+										<td>{{item2.menuId}}</td>
+										<td>{{item2.menuName}}</td>
+										<td>{{item2.menuLevel}}</td>
+										<td>{{item2.menuUrl}}</td>
+										<td>{{item2.menuPre}}</td>
+										<td>
+											<div class="action-buttons">
+												<a class="red delete-role-menu" href="javascript:void(0)"
+													title="删除"> <i class="icon-trash bigger-130" @click="deleteRoleMenu(item2)"></i>
+												</a>
+											</div>
+										</td>
+									</tr>
+								</template>
+								<tr>
+									<td>
+									   <select class="form-control col-xs-1" id="rolePk" name="rolePk" v-model="role">
+											<option value="0"></option>
+											<option v-for="item2 in rolelist" :value="item2.rolePk+'/'+item2.roleName">{{item2.roleName}}</option>
+									   </select>
+									</td>
+									<td></td>
+									<td><select class="form-control col-xs-1" id="menuPk" name="menuPk" v-model="menu">
+											<option value="0"></option>
+											<option v-for="item3 in menulist" :value="item3.menuPk+'/'+item3.menuName+'/'+item3.menuId">{{item3.menuId}}-{{item3.menuName}}</option>
+									</select></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td>
+										<div class="action-buttons">
+											<a class="blue insert-role-menu" href="javascript:void(0)">
+												<i class="icon-plus bigger-130" @click="insertRoleMenu"></i>
+											</a>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div> 
+		<div class="panel panel-default bords">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a class="accordion-toggle collapsed" data-toggle="collapse" @click="makeActive('collapseThree')"
+						data-parent="#accordion" href="#collapseThree"> <i
+						class="bigger-110 icon-angle-right"
+						data-icon-hide="icon-angle-down" data-icon-show="icon-angle-right"></i>
+						角色操作关系管理
+					</a>
+				</h4>
+		</div>
+
+		<div class="panel-collapse collapse" id="collapseThree"
+				style="height: 0px;">
+				<div class="panel-body">
+					<!-- 角色操作关系管理 -->
+					<div id="roleMenuList">
+						<div id="msg3"></div>
+						<table class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th style="width: 10%">角色名</th>
+									<th style="width: 80%">操作权限</th>
+									<th style="width: 10%"></th>
+								</tr>
+							</thead>
+							<tbody>
+							    <!-- 删除 start -->
+								<tr class="editTr" v-for="item in opRolelist">
+									<td>{{item.roleName}}</td>
+									<td>
+										<el-checkbox-group v-model="item.operateId">
+										    <el-checkbox v-for="(item2,index) in oplist" :label="item2.pkSerial">{{item2.operateName}}</el-checkbox> 
+										</el-checkbox-group> 
+								   </td>
+									<td><div class="action-buttons">
+										<a class="red delete-role-op" href="javascript:void(0)">
+											<i class="icon-trash bigger-130" @click="deleteRoleOp(item)"></i>
+										</a>
+									</div></td>
+								</tr>
+								<!-- 删除 end -->
+								<!-- 新增 start -->
+								<tr>
+									<td>
+									   <select class="form-control col-xs-1" id="rolePk2" name="rolePk2" v-model="role">
+											<option value="0"></option>
+											<option v-for="item3 in rolelist" :value="item3.rolePk+'-'+item3.roleName">{{item3.roleName}}</option>
+									   </select></td>
+									<td>
+										<el-checkbox-group v-model="opPks">
+										    <el-checkbox v-for="item3 in oplist" :key="item3.pkSerial" :label="item3.pkSerial">{{item3.operateName}}</el-checkbox> 
+										</el-checkbox-group>
+									</td>
+									<td>
+										<div class="action-buttons">
+											<a class="blue insert-role-op" href="javascript:void(0)">
+												<i class="icon-plus bigger-130" @click="insertRoleOp"></i>
+												
+											</a>
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												<!-- <i class="icon-plus bigger-130" @click="addAllRoleOps"></i> -->
+												 <el-checkbox v-model="checked" @change="addAll()">全选</el-checkbox>
+										</div>
+									</td>
+								</tr>
+								<!-- 新增  end -->
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div> 
+	</div>
+	<br>
+	<br>
+	<br>
+</body>
+</html>

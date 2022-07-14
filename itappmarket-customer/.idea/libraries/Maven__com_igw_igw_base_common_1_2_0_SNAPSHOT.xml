@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.igw:igw-base-common:1.2.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-common/1.2.0-SNAPSHOT/igw-base-common-1.2.0-20200629.082029-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-common/1.2.0-SNAPSHOT/igw-base-common-1.2.0-20200629.082029-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../Environments/maven-repository/com/igw/igw-base-common/1.2.0-SNAPSHOT/igw-base-common-1.2.0-20200629.082029-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

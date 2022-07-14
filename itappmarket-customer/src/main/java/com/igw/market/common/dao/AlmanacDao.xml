@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace：必须与对应的接口全类名一致 id:必须与对应接口的某个对应的方法名一致 -->
+
+<mapper namespace="com.igw.market.common.dao.AlmanacDao">
+
+    <!-- 查询日历信息 -->
+    <select id="getAlmanac" parameterType="java.util.Map" resultType="com.igw.market.common.domain.AlmanacInfo">
+        SELECT
+         wm_concat(to_char(a.fundcode)) fundCode,
+         a.information_date informationDate,
+		 a.information_time informationTime,
+		 a.title ,
+		 a.content , 
+		 a.noticecode,
+		 a.noticename ,
+		 a.notice_id noticeId
+        FROM wx_investment_almanac a
+        WHERE a.valid_flag = '0'  
+        <if test="informationDate != null and informationDate != ''">
+            and a.information_date = #{informationDate}
+        </if>
+        <if test="informationTime != null and informationTime != ''">
+            and a.information_time = #{informationTime}
+        </if>
+        <if test="title != null and title != ''">
+            and a.title = #{title}
+        </if>
+        <if test="content != null and content != ''">
+            and a.content = #{content}
+        </if>
+        <if test="fundCode != null and fundCode != ''">
+            and a.fundCode = #{fundCode}
+        </if>
+        <if test="fundName != null and fundName != ''">
+            and a.fundName like CONCAT(CONCAT('%',#{fundName}),'%')
+        </if>
+        <if test="noticeCode != null and noticeCode != ''">
+            and a.noticeCode = #{noticeCode}
+        </if>
+        <if test="noticeName != null and noticeName != ''">
+            and a.noticeName like CONCAT(CONCAT('%',#{noticeName}),'%')
+        </if>
+        <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+            and to_date(a.information_date,'yyyyMMdd') &gt;= to_date(#{startDate},'yyyyMMdd') and
+            to_date(a.information_date,'yyyyMMdd') &lt;= to_date(#{endDate},'yyyyMMdd')
+        </if>
+        <if test="fundCodes != null and fundCodes.size() > 0">
+            and ( a.fundCode in
+            <foreach collection="fundCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            or a.fundCode = 'NOTICE'	
+            )
+        </if>
+        group by 
+		 a.information_date ,
+		 a.information_time ,
+		 a.title ,
+		 a.content , 
+		 a.noticecode,
+		 a.noticename ,
+		 a.notice_id
+		 order by a.information_date  desc
+    </select>
+
+
+<!-- 查询日历信息 -->
+    <select id="getAlmanacList" parameterType="java.util.Map" resultType="com.igw.market.common.domain.AlmanacInfo">
+        SELECT
+         a.fundcode fundCode,
+         a.information_date informationDate,
+		 a.information_time informationTime,
+		 a.title ,
+		 a.content , 
+		 a.noticecode,
+		 a.noticename ,
+		 a.notice_id noticeId
+        FROM wx_investment_almanac a
+        WHERE a.valid_flag = '0'  
+        and a.notice_id = #{noticeId}
+    </select>
+    
+    <!-- 新增：[日历信息]数据 -->
+    <insert id="addAlmanac" parameterType="com.igw.market.common.domain.AlmanacInfo">
+        <selectKey resultType="String" keyProperty="pkId" order="BEFORE">
+            SELECT wx_investment_almanac_PK.NEXTVAL AS pkId FROM DUAL
+        </selectKey>
+        INSERT INTO wx_investment_almanac
+        (
+        pk_id,
+        information_date,
+        information_time,
+        title,
+        content,
+        fundCode,
+        fundName,
+        noticeCode,
+        noticeName,
+        valid_flag,
+        created_user,
+        created_date,
+        notice_id
+        )
+        VALUES
+        (
+        #{pkId, jdbcType=VARCHAR},
+        #{informationDate, jdbcType=VARCHAR},
+        #{informationTime, jdbcType=VARCHAR},
+        #{title, jdbcType=VARCHAR},
+        #{content, jdbcType=VARCHAR},
+        #{fundCode, jdbcType=VARCHAR},
+        #{fundName, jdbcType=VARCHAR},
+        #{noticeCode, jdbcType=VARCHAR},
+        #{noticeName, jdbcType=VARCHAR},
+        '0',
+        #{createdUser, jdbcType=VARCHAR},
+        sysdate,
+        #{noticeId, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 修改：[日历信息]数据 -->
+    <update id="editAlmanac" parameterType="com.igw.market.common.domain.AlmanacInfo">
+        UPDATE wx_investment_almanac
+        SET
+        information_date = #{informationDate, jdbcType=VARCHAR},
+        information_time = #{informationTime, jdbcType=VARCHAR},
+        title = #{title, jdbcType=VARCHAR},
+        content = #{content, jdbcType=VARCHAR},
+        <if test="fundCode != null and fundCode != ''">
+        	fundCode = #{fundCode, jdbcType=VARCHAR},
+        </if>
+        fundName = #{fundName, jdbcType=VARCHAR},
+        noticeCode = #{noticeCode, jdbcType=VARCHAR},
+        noticeName = #{noticeName, jdbcType=VARCHAR},
+        updated_user = #{updatedUser, jdbcType=VARCHAR},
+        updated_date =sysdate
+        WHERE valid_flag = '0'
+        AND notice_id = #{noticeId} 
+        <if test="fundCode != null and fundCode != ''">
+        and fundCode = #{fundCode } 
+        </if>
+    </update>
+
+    <!-- 删除：[日历信息]数据 -->
+    <update id="deleteAlmanac" parameterType="com.igw.market.common.domain.AlmanacInfo">
+        UPDATE wx_investment_almanac
+        SET
+        valid_flag = '1',
+        updated_user = #{updatedUser, jdbcType=VARCHAR},
+        updated_date =sysdate
+        WHERE valid_flag = '0'
+        AND notice_id = #{noticeId }
+        <if test="fundCode != null and fundCode != ''">
+        and fundCode = #{fundCode } 
+        </if>
+    </update>
+</mapper>

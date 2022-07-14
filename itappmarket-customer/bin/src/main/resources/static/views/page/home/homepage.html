@@ -1,0 +1,521 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--<meta charset="utf-8" />-->
+<!--	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>-->
+<!--    <script type="text/javascript" src="/static/views/js/commonJs.js"></script>-->
+<!--    <script type="text/javascript" src="/static/views/js/util/dateUtils.js"></script>-->
+<!--	<script src="/static/views/js/home/homepage.js"></script> -->
+<!--<style>-->
+<!--  .el-range-separator {-->
+<!--    width: 40px!important;-->
+<!--  }-->
+<!--  .is-selected {-->
+<!--		color: #1989FA;-->
+<!--	}-->
+<!--	-->
+<!--	.el-calendar__button-group {-->
+<!--		display: none-->
+<!--	}-->
+<!--	-->
+<!--	th {-->
+<!--		 font-size: 10px;-->
+<!--		  padding: 8px 0;-->
+<!--	}-->
+<!--	-->
+<!--	.el-dialog__body {-->
+<!--		padding: 10px 20px 10px 20px!important;-->
+<!--	}-->
+<!--	-->
+<!--	.el-icon-arrow-down {-->
+<!--		margin-top: 5px;-->
+<!--	}-->
+<!--	-->
+<!--	.ellipsis .el-popover__reference {-->
+<!--		background-color: #85bf9a !important;-->
+<!--	}-->
+<!--	.el-calendar__body {-->
+<!--	  	border: solid 1px #cae2f4 !important;-->
+<!--	  	padding: 0px 0.01px 0px !important;-->
+<!--	}-->
+<!--	.el-calendar__body thead{-->
+<!--	  	background-color:#96caf1 !important;-->
+<!--	}-->
+<!--	.el-calendar-table {-->
+<!--	width: 824px;-->
+<!--	}-->
+<!--	.el-calendar-table .el-calendar-day {-->
+<!--		padding: 3px !important;-->
+<!--		height: 72.5px !important;-->
+<!--		border: solid 1px #cae2f4 !important;-->
+<!--		/* width:1000px !important; */-->
+<!--	}-->
+<!--	.el-calendar-table thead th{-->
+<!--		text-align:center !important;-->
+<!--	}-->
+<!--	.test1{-->
+<!--		background-color: #6cb2ec!important;margin-bottom: 3px;"-->
+<!--	}-->
+<!--	.test2{-->
+<!--	  background-color: #69bec1!important;margin-bottom: 3px;"-->
+<!--	}-->
+<!--	.test3{-->
+<!--		background-color: #e9a846!important;margin-bottom: 3px;"-->
+<!--	}-->
+<!--	.test4{-->
+<!--		background-color: #f56c6c!important;margin-bottom: 3px;"-->
+<!--	}-->
+<!--	.el-calendar{-->
+<!--		padding:0 11px 0 11px;-->
+<!--	}-->
+<!--	.el-calendar__header{-->
+<!--		display:none;-->
+<!--	}-->
+<!--	.el-checkbox-group {-->
+<!--	   display: inline!important;-->
+<!--	}-->
+<!--	.el-select .el-input .el-input&#45;&#45;suffix .is-focus {-->
+<!--	      width: 120px;-->
+<!--	}-->
+<!--	.el-select{-->
+<!--	  width: 120px!important;-->
+<!--	}-->
+<!--	.el-date-editor.el-input, .el-date-editor.el-input__inner {-->
+<!--    width: 120px;-->
+<!--}-->
+<!--.el-table td, .el-table th {-->
+<!--		      padding: 5px 0;-->
+<!--		 }-->
+<!--		 .demo-table-expand {-->
+<!--    font-size: 0;-->
+<!--  }-->
+<!--  .demo-table-expand label {-->
+<!--    width: 90px;-->
+<!--    color: #99a9bf;-->
+<!--  }-->
+<!--  .demo-table-expand .el-form-item {-->
+<!--    margin-right: 0;-->
+<!--    margin-bottom: 0;-->
+<!--    width: 50%;-->
+<!--  }-->
+<!--  .el-pagination__editor.el-input .el-input__inner {-->
+<!--    width: 40px;-->
+<!--}-->
+<!--.el-pagination__jump {-->
+<!--margin-left: 3px;-->
+<!--}-->
+
+<!--.el-range-input {-->
+<!-- width:80px!important;-->
+<!--}-->
+<!--.el-date-editor&#45;&#45;daterange.el-input, .el-date-editor&#45;&#45;daterange.el-input__inner, .el-date-editor&#45;&#45;timerange.el-input, .el-date-editor&#45;&#45;timerange.el-input__inner {-->
+<!--    width: 285px;-->
+<!--}-->
+<!--.el-checkbox {-->
+<!--margin-right: 10px;-->
+<!--}-->
+<!--.widget-header {-->
+<!--	 min-height: 25px!important;-->
+<!--	 max-height: 25px!important;-->
+<!--	 padding-bottom: 4px;-->
+<!--}-->
+<!--.span-ellipsis {-->
+<!--  width: 100%;-->
+<!--  overflow: hidden;-->
+<!--  white-space: nowrap;-->
+<!--  text-overflow: ellipsis;-->
+<!--  display: block;-->
+<!--}-->
+<!--</style>-->
+<!--<title></title>-->
+<!--</head>-->
+<!--<body>-->
+<!--	<div id="app" style="overflow-y: hidden;overflow-x: hidden;margin: 0 10px 0 0px;" class="main-container">-->
+<!--	-->
+<!--	    &lt;!&ndash; 左边-&ndash;&gt;-->
+<!--		<div style="width: 25%; float: left;height: 890px; margin-top: 0px;margin-left: 20px" >-->
+<!--			<div class="widget-box" style="margin-top: 15px;height: 628px;">-->
+<!--				<div class="widget-header header-color-blue2">-->
+<!--					<h4 class="lighter smaller">公募基金类别-->
+<!--						<template v-if="wdNotDateList.length>0">-->
+<!--							<el-tooltip placement="right-end" effect="light">-->
+<!--							  <div slot="content" :style="wdStyle">{{wdNotDateList}}</div>-->
+<!--							  <div style="float:right;margin-right:10px;height: 30px;">截至时间：{{wdDate}}</div>-->
+<!--							</el-tooltip>-->
+<!--						</template>-->
+<!--						<template v-if="wdNotDateList.length==0">-->
+<!--							<div style="float:right;margin-right:10px;height: 30px;">截至时间：{{wdDate}}</div>-->
+<!--						</template>-->
+<!--					</h4>-->
+<!--				</div>-->
+<!--				<div class="widget-body" style="height: 588px;overflow-x:auto;width:100%;">-->
+<!--					<div class="widget-main padding-8">-->
+<!--						<el-tree v-loading="wdTreeLoading" :data="wdData" :props="defaultProps" node-key="id" :default-expanded-keys="wdDataId">-->
+<!--				 			<span class="span-ellipsis" slot-scope="{ node, data }">-->
+<!--								<span :title="node.label">{{ node.label }}</span>-->
+<!--							</span>-->
+<!--				 		</el-tree>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--			</div>-->
+<!--			<div class="widget-box" style="height: 255px;margin-top:-6px">-->
+<!--				<div class="widget-header header-color-blue2">-->
+<!--					<h4 class="lighter smaller">专户产品类别-->
+<!--						<template v-if="wdNotDateList.length>0">-->
+<!--							<el-tooltip placement="right-start" effect="light">-->
+<!--							  <div slot="content" :style="accStyle">{{accNotDateList}}</div>-->
+<!--							  <div style="float:right;margin-right:10px;height: 30px;">截至时间：{{accDate}}</div>-->
+<!--							</el-tooltip>-->
+<!--						</template>-->
+<!--						<template v-if="wdNotDateList.length==0">-->
+<!--							<div style="float:right;margin-right:10px;height: 30px;">截至时间：{{accDate}}</div>-->
+<!--						</template>-->
+<!--						-->
+<!--					</h4>-->
+<!--				</div>-->
+<!--				<div class="widget-body" style="height: 190px;overflow-x:auto;width:100%;">-->
+<!--					<div class="widget-main padding-8">-->
+<!--				 		<el-tree v-loading="accTreeLoading" :data="accData" :props="defaultProps" node-key="id" :default-expanded-keys="accDataId">-->
+<!--				 			<span class="span-ellipsis" slot-scope="{ node, data }">-->
+<!--								<span :title="node.label">{{ node.label }}</span>-->
+<!--							</span>-->
+<!--				 		</el-tree>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--			</div>-->
+<!--		</div>-->
+<!--		 &lt;!&ndash; 左边-&ndash;&gt;-->
+<!--		 &lt;!&ndash; 日历 &ndash;&gt;-->
+<!--		 <div style="width: 45.3%; float: left;height: 890px; margin-top: 0px;margin-left:10px"  >-->
+<!--		 		<div class="widget-box" style="height: 620px;margin-top: 15px">-->
+<!--					<div class="widget-header header-color-blue2">-->
+<!--						<h4 class="lighter smaller">产品日历</h4>-->
+<!--					</div>-->
+<!--					<div class="widget-body">-->
+<!--						<div class="widget-main padding-8">-->
+<!--							<div style="margin-left: 44%;font-size:25px;color:#50a0dc;display:inline;">-->
+<!--							  	 <span style="margin-top: 0px">{{nowDate}}</span>					-->
+<!--							</div>-->
+<!--							<div>-->
+<!--								<div style="margin-left: 1%;display:inline;">-->
+<!--								选择月份：-->
+<!--								     <el-date-picker-->
+<!--								     size="mini"-->
+<!--							         v-model="selectDate"-->
+<!--							         type="month"-->
+<!--							         :editable="editable"-->
+<!--							         :clearable="isclearable"-->
+<!--							         placeholder="选择月"-->
+<!--							         format="yyyy-MM" -->
+<!--							         >-->
+<!--							    	</el-date-picker>-->
+<!--								 </div>-->
+<!--								   <div style="margin-left:0%;display:inline;">-->
+<!--			                     	负责人：-->
+<!--						          <el-select size="mini" v-model="personLiable" filterable style="width:200px;" @change="getQueryList()">-->
+<!--						           <el-option key="" label="&#45;&#45;全部&#45;&#45;" value=""> </el-option>-->
+<!--						           <el-option v-for="(item,index) in commonPersonList" :key="item.userName" :label="item.accountName" :value="item.userName"> </el-option>-->
+<!--					              </el-select>-->
+<!--			                   </div>  -->
+<!--								 <div style="margin-left:14%;display:inline;margin-top: 0px">-->
+<!--									 <el-checkbox-group v-model="checkList" :min="1" @change="getQueryList">-->
+<!--									    <el-checkbox label="1" >新增<div style="height:10px;width:18px;background-color: #6cb2ec;display:inline-flex;margin-left: 2px;"></div></el-checkbox>-->
+<!--									    <el-checkbox label="2">变更<div style="height:10px;width:18px;background-color: #69bec1;display:inline-flex;margin-left: 2px;"></div></el-checkbox>-->
+<!--									    <el-checkbox label="3">终止<div style="height:10px;width:18px;background-color: #e9a846;display:inline-flex;margin-left: 2px;"></div></el-checkbox>-->
+<!--									    <el-checkbox label="4">清算<div style="height:10px;width:18px;background-color: #f56c6c;display:inline-flex;margin-left: 2px;"></div></el-checkbox>-->
+<!--									  </el-checkbox-group>-->
+<!--			                   </div> -->
+<!--							</div>-->
+<!--		                   <div v-if="isShow" style="margin-top: 7px;height: 495px">-->
+<!--							  <el-calendar  v-model="selectDate" v-loading="calendarLoading">-->
+<!--								    <template-->
+<!--									    slot="dateCell"-->
+<!--									    slot-scope="{date, data}">-->
+<!--									    <div :class="data.isSelected ? 'is-selected' : ''" style="margin-left: 70px; margin-bottom: 2px;">-->
+<!--									     {{ data.day.split('-').slice(1).join('-') }} -->
+<!--									    </div>-->
+<!--									       <div v-if="itemView[''+data.day+'']" >-->
+<!--										      <div v-for="(item,index) in itemView[''+data.day+'']">-->
+<!--										          <div v-if="index < 1" >-->
+<!--										               <el-popover trigger="click" placement="top-start" width="500">-->
+<!--													           <p>{{item.changeType == '1'?'新增': (item.changeType == '2'?'变更':(item.changeType == '2'?"清算":"终止"))}}日期&nbsp&nbsp&nbsp&nbsp {{item.changeDate}}</p>-->
+<!--													           <p>产品代码&nbsp&nbsp&nbsp&nbsp {{item.fundCode}}</p>-->
+<!--													           <p>产品名称&nbsp&nbsp&nbsp&nbsp {{item.fundFullName}}</p>-->
+<!--													           <p>{{item.changeType == '1'?'新增': (item.changeType == '2'?'变更':(item.changeType == '2'?"清算":"终止"))}}备注&nbsp&nbsp&nbsp&nbsp {{item.changeRemark}}</p>-->
+<!--													           <p>{{item.changeType == '1'?'新增': (item.changeType == '2'?'变更':(item.changeType == '2'?"清算":"终止"))}}内容&nbsp&nbsp&nbsp&nbsp  {{item.changeText}}</p>-->
+<!--															 <div slot="reference" :class="'test'+ item.changeType+ ' ellipsis'" >-->
+<!--															  <span style="padding: 2px;color: #fff; font-size: .85em;" v-if="item.fundName&&item.fundName.length>4">{{item.fundCode}}-{{item.fundName.replace("景顺长城","").substr(0,4)+"."}}</span>-->
+<!--															  <span style="padding: 2px;color: #fff; font-size: .85em;" v-else>{{item.fundCode}}-{{item.fundName?item.fundName.replace("景顺长城",""):item.fundName}}</span>-->
+<!--															 </div>	 -->
+<!--													</el-popover>-->
+<!--										              -->
+<!--										          </div>-->
+<!--										          <div v-if="index == 1" >-->
+<!--										               <el-popover trigger="click" placement="bottom" width="160">-->
+<!--										                              <div v-for="(item,index2) in itemView[''+data.day+'']">-->
+<!--										                                   <div v-if="index2 > 0">-->
+<!--																               <el-popover trigger="hover" placement="bottom" width="500">-->
+<!--																			        <span>-->
+<!--																			           <p>{{item.changeType == '1'?'新增': (item.changeType == '2'?'变更':(item.changeType == '2'?"清算":"终止"))}}日期&nbsp&nbsp&nbsp&nbsp  {{item.changeDate}}</p>-->
+<!--																			           <p>产品代码&nbsp&nbsp&nbsp&nbsp  {{item.fundCode}}</p>-->
+<!--																			           <p>产品名称&nbsp&nbsp&nbsp&nbsp  {{item.fundFullName}}</p>-->
+<!--																			           <p>{{item.changeType == '1'?'新增': (item.changeType == '2'?'变更':(item.changeType == '2'?"清算":"终止"))}}备注&nbsp&nbsp&nbsp&nbsp  {{item.changeRemark}}</p>-->
+<!--																			           <p>{{item.changeType == '1'?'新增': (item.changeType == '2'?'变更':(item.changeType == '2'?"清算":"终止"))}}内容&nbsp&nbsp&nbsp&nbsp  {{item.changeText}}</p>-->
+<!--																			        </span>-->
+<!--																					 <div slot="reference" :class="'test'+ item.changeType+ ' ellipsis'">-->
+<!--																					  <span style="padding: 2px;color: #fff; font-size: .85em;" v-if="item.fundName&&item.fundName.length>4">{{item.fundCode}}-{{item.fundName.replace("景顺长城","").substr(0,4)+"..."}}</span>-->
+<!--																					  <span style="padding: 2px;color: #fff; font-size: .85em;" v-else>{{item.fundCode}}-{{item.fundName?item.fundName.replace("景顺长城",""):item.fundName}}</span>-->
+<!--																					 </div>	 -->
+<!--																			</el-popover> -->
+<!--																			</div>-->
+<!--																	  </div>-->
+<!--										                     <div slot="reference" class="ellipsis" style="margin-bottom: 3px;">-->
+<!--										                       <span style="padding: 5px;color: #358b9f; font-size: .85em;"><i class="el-icon-arrow-down">点击查看更多</i></span>-->
+<!--															 </div>-->
+<!--										               </el-popover>-->
+<!--										          </div>-->
+<!--										      </div>-->
+<!--									      </div>-->
+<!--								   </template>-->
+<!--								</el-calendar> -->
+<!--							  </div>-->
+<!--							    <div v-else style="margin-top: 7px;height: 495px">-->
+<!--							  </div>  -->
+<!--						</div>-->
+<!--					</div>-->
+<!--				  <div class="widget-box" style="margin-top:7px;">-->
+<!--					<div class="widget-header header-color-blue2">-->
+<!--						<h4 class="lighter smaller">产品统计</h4>-->
+<!--					</div>-->
+<!--					<div class="widget-body" style="height: 189px;">-->
+<!--						<div class="widget-main padding-8">-->
+<!--							<div class="block" style="margin-top: 5px;">-->
+<!--							    <span style="font-size: 15px;">选择日期:</span> -->
+<!--							    -->
+<!--							    <el-date-picker-->
+<!--							      v-model="value2"-->
+<!--							      type="daterange"-->
+<!--							      align="right"-->
+<!--							      unlink-panels-->
+<!--							      range-separator="至"-->
+<!--							      start-placeholder="开始日期"-->
+<!--							      end-placeholder="结束日期"-->
+<!--							      @change="changeStartEnd"-->
+<!--							      value-format="yyyyMMdd" format="yyyyMMdd" -->
+<!--							      :picker-options="pickerOptions">-->
+<!--							    </el-date-picker>-->
+<!--							  </div>-->
+<!--							  <div style="margin-top: 10px">-->
+<!--							     <template>-->
+<!--									  <el-table-->
+<!--									    :data="tableData"-->
+<!--									    border-->
+<!--									    v-loading="tableLoading"-->
+<!--									    style="width: 100%;line-height:25px"-->
+<!--									    :row-style="{height:'40px'}"-->
+<!--									    :header-cell-style="{background:'#FAFAFA',}">-->
+<!--									    <el-table-column-->
+<!--									      prop="typeName"-->
+<!--									      label=""-->
+<!--									      width="180"-->
+<!--									      height="90px">-->
+<!--									    </el-table-column>-->
+<!--									    <el-table-column-->
+<!--									      prop="one"-->
+<!--									      label="新增"-->
+<!--									      width="165 "-->
+<!--									      height="90px">-->
+<!--									    </el-table-column>-->
+<!--									    <el-table-column-->
+<!--									      prop="two"-->
+<!--									      label="变更"-->
+<!--									       width="165"-->
+<!--									       height="90px">-->
+<!--									    </el-table-column>-->
+<!--									    <el-table-column-->
+<!--									      prop="three"-->
+<!--									      label="终止"-->
+<!--									       width="165"-->
+<!--									       height="90px">-->
+<!--									    </el-table-column>-->
+<!--									    <el-table-column-->
+<!--									      prop="four"-->
+<!--									      label="清算"-->
+<!--									       width="165"-->
+<!--									       height="90px">-->
+<!--									    </el-table-column>-->
+<!--									  </el-table>-->
+<!--							</template>-->
+<!--							  </div>-->
+<!--						</div>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--		 </div>-->
+<!--		 </div>-->
+<!--		&lt;!&ndash; 右边-消息提醒  start&ndash;&gt;-->
+<!--		<div style="float: left;width: 27%;margin-top: 0px;margin-left:10px ">-->
+<!--			<div class="widget-box" style="margin-top: 15px;">-->
+<!--				<div class="widget-header header-color-blue2">-->
+<!--					<h4 class="lighter smaller">临近开放期</h4>-->
+<!--				</div>-->
+<!--				<div class="widget-body" style="overflow-x:auto;height: 360px;">-->
+<!--					<div class="widget-main padding-8">-->
+<!--						<el-table-->
+<!--				    :data="tableData2"-->
+<!--				    style="width: 100%"-->
+<!--				    -->
+<!--				    v-loading="openingPeriodLoading"-->
+<!--				     :header-cell-style="{background:'#FAFAFA',}">-->
+<!--				    <el-table-column-->
+<!--				      label="产品简称"-->
+<!--				      prop="fundName"-->
+<!--				       width="110px">-->
+<!--				        <template slot-scope="scope">-->
+<!--						    <el-popover trigger="hover" placement="bottom" width="300">-->
+<!--							 <span>{{scope.row.fundName}}</span>-->
+<!--							 <div slot="reference" class="ellipsis">-->
+<!--							  <span v-if="scope.row.fundName!=null&&scope.row.fundName.length>6">{{scope.row.fundName.replace("景顺长城","").substr(0,6)+"."}}</span>-->
+<!--							  <span v-else>{{scope.row.fundName}}</span>-->
+<!--							 </div>-->
+<!--							</el-popover>-->
+<!--						</template>-->
+<!--				    </el-table-column>-->
+<!--				    <el-table-column-->
+<!--				      label="下次开放期首日"-->
+<!--				      prop="nextOpenFirstDate"-->
+<!--				       width="105px">-->
+<!--				    </el-table-column>-->
+<!--				    <el-table-column-->
+<!--				      label="责任人"-->
+<!--				      width="90px"-->
+<!--				      prop="personLiableName">-->
+<!--				    </el-table-column>-->
+<!--				     <el-table-column-->
+<!--				      label="复核人"-->
+<!--				       width="90px"-->
+<!--				      prop="checkLiableName">-->
+<!--				    </el-table-column>-->
+<!--				    <el-table-column-->
+<!--				      label="倒计时"-->
+<!--				       width="80px"-->
+<!--				       :formatter="formatterDays"-->
+<!--				      prop="nextOpenFirstDate">-->
+<!--				    </el-table-column>-->
+<!--				  </el-table>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--				-->
+<!--				<div class="widget-header header-color-blue2" style="margin-top:6px;">-->
+<!--					<h4 class="lighter smaller">临近赎回日</h4>-->
+<!--				</div>-->
+<!--				<div class="widget-body" style="height:190px;overflow-x:auto;">-->
+<!--					<div class="widget-main padding-8">-->
+<!--						<el-table-->
+<!--						    :data="tableData4"-->
+<!--						    style="width: 100%"-->
+<!--						     v-loading="firstDateLoading"-->
+<!--						     :header-cell-style="{background:'#FAFAFA',}">-->
+<!--						     <el-table-column-->
+<!--						      label="产品简称"-->
+<!--						      prop="fundName"-->
+<!--						       width="110px">-->
+<!--						       <template slot-scope="scope">-->
+<!--								    <el-popover trigger="hover" placement="bottom" width="300">-->
+<!--									 <span>{{scope.row.fundName}}</span>-->
+<!--									 <div slot="reference" class="ellipsis">-->
+<!--									  <span v-if="scope.row.fundName!=null&&scope.row.fundName.length>6">{{scope.row.fundName.replace("景顺长城","").substr(0,6)+"."}}</span>-->
+<!--									  <span v-else>{{scope.row.fundName}}</span>-->
+<!--									 </div>-->
+<!--									</el-popover>-->
+<!--								</template>-->
+<!--						    </el-table-column>-->
+<!--						    <el-table-column-->
+<!--						      label="首次打开赎回日"-->
+<!--						      prop="firstRedemptionDate"-->
+<!--						       width="105px">-->
+<!--						    </el-table-column>-->
+<!--						    <el-table-column-->
+<!--						      label="责任人"-->
+<!--						      width="90px"-->
+<!--						      prop="personLiableName">-->
+<!--						    </el-table-column>-->
+<!--						     <el-table-column-->
+<!--						      label="复核人"-->
+<!--						       width="90px"-->
+<!--						      prop="checkLiableName">-->
+<!--						    </el-table-column>-->
+<!--						    <el-table-column-->
+<!--						      label="倒计时"-->
+<!--						       width="80px"-->
+<!--						       :formatter="formatterDays"-->
+<!--						      prop="firstRedemptionDate">-->
+<!--						    </el-table-column>-->
+<!--						  </el-table>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--				-->
+<!--				<div class="widget-header header-color-blue2"  style="margin-top:7px;">-->
+<!--					<h4 class="lighter smaller">临近终止日</h4>-->
+<!--				</div>-->
+<!--				<div class="widget-body"  style="height: 189.5px;overflow-x:auto;">-->
+<!--					<div class="widget-main padding-8">-->
+<!--						<el-table-->
+<!--						    :data="tableData3"-->
+<!--						    style="width: 100%"-->
+<!--						     v-loading="endDateLoading"-->
+<!--						     :header-cell-style="{background:'#FAFAFA',}">-->
+<!--						     <el-table-column-->
+<!--						      label="产品简称"-->
+<!--						      prop="fundName"-->
+<!--						       width="110px">-->
+<!--						        <template slot-scope="scope">-->
+<!--								    <el-popover trigger="hover" placement="bottom" width="300">-->
+<!--									 <span>{{scope.row.fundName}}</span>-->
+<!--									 <div slot="reference" class="ellipsis">-->
+<!--									  <span v-if="scope.row.fundName&&scope.row.fundName.length>6">{{scope.row.fundName.replace("景顺长城","").substr(0,6)+"."}}</span>-->
+<!--									  <span v-else>{{scope.row.fundName}}</span>-->
+<!--									 </div>-->
+<!--									</el-popover>-->
+<!--								</template>-->
+<!--						    </el-table-column>-->
+<!--						    <el-table-column-->
+<!--						      label="终止日"-->
+<!--						      prop="contractEndDate"-->
+<!--						       width="105px">-->
+<!--						    </el-table-column>-->
+<!--						    <el-table-column-->
+<!--						      label="责任人"-->
+<!--						      width="90px"-->
+<!--						      prop="personLiableName">-->
+<!--						    </el-table-column>-->
+<!--						     <el-table-column-->
+<!--						      label="复核人"-->
+<!--						       width="90px"-->
+<!--						      prop="checkLiableName">-->
+<!--						    </el-table-column>-->
+<!--						    <el-table-column-->
+<!--						      label="倒计时"-->
+<!--						       width="80px"-->
+<!--						       :formatter="formatterDays"-->
+<!--						      prop="contractEndDate">-->
+<!--						    </el-table-column>-->
+<!--						  </el-table>-->
+<!--					</div>-->
+<!--				</div>-->
+<!--			</div>-->
+<!--		 </div>-->
+<!--		&lt;!&ndash; 右边-消息提醒 end &ndash;&gt;-->
+<!--		-->
+<!--	</div>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+
+
+
+
+
+

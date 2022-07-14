@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>      
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+	<script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+	<script type="text/javascript" src="/static/views/js/wxpush/userPush.js"></script>
+	<style type="text/css">
+		 .el-table td, .el-table th {
+		      padding: 5px 0;
+		 }
+	     .el-pagination__total {
+	    	 float: right;
+	     }
+	     .el-pagination {
+	         padding: 8px 15px;
+	     }
+	     .el-button{
+	         border: 0px solid #DCDFE6;
+	         /*height: 37px;*/
+	     }
+	 
+	     .widths{
+	       width:150px;
+	     }
+	     .el-table__body tr,el-table__body td {
+	     	padding:0 0 0 0!important;
+	     	height:40px !important;
+	     }
+	</style>
+</head>
+<body>
+	<div class="main-container" id="app" style="overflow-y: hidden; margin: 0 10px 0 0px">
+	    <div style="margin: 0 100px 0 100px">
+			<h2>用户推送列表</h2>
+			<div>
+				<!--<template>
+					<el-button size="small" type="danger"  @click="pushTest()" style="margin-top: 15px;">测试推送 <i class="el-icon-circle-plus-outline"></i></el-button>
+				</template>-->
+				<el-form style="float:right;margin-right: -15px;">
+				          用户名称: <el-input v-model="userName" style="width:200px;margin-top: 10px;" @input="searchClick()"></el-input>&nbsp;&nbsp;&nbsp;&nbsp;
+				  </el-form> 
+			</div>
+			</br>
+			</br>
+			<div class="tabbable tabs-left" >
+				<el-table :data="userPushList" :span-method="objectSpanMethod" stripe border style="width:100%" :header-cell-style="{background:'#FAFAFA',}">
+					<el-table-column prop="noticeName" label="公告名称" width="300" height="10px" fixed>
+					</el-table-column>
+
+					<el-table-column prop="userFund.userName" label="姓名" width="300" height="10px" fixed>
+					</el-table-column>
+
+					<el-table-column prop="userFund.fundCode" label="基金代码" width="300" height="10px" fixed>
+					</el-table-column>
+					<el-table-column prop="userFund.fundName" label="基金名称" width="500" height="10px" fixed>
+					</el-table-column> 
+					
+					<el-table-column prop="userFund.holdingAmount"  label="持有金额" fixed="right">
+					</el-table-column>
+					
+				</el-table>
+				<br>
+				 <el-pagination background 
+						 :page-size="paging.pageSize" 
+						 @current-change="handleCurrentChange"
+						 @size-change="handleSizeChange"
+                         :current-page="paging.pageNumber"
+                         :page-sizes="paging.sizes"
+                         layout="sizes,prev,pager,next,jumper,total"
+                         :total="paging.totalRows"> 
+			</div>
+	     </div>
+		<!-- 表单iframe -->
+		<el-dialog :title="formInfo.title" :visible.sync="formInfo.formShow" width="40%" top="20px" :before-close="handleClose">
+			<iframe id="iframeMain1" ref="iframeMain1"
+					style="border: none;"
+					width="100%"
+					:src="formInfo.formSrc"
+					height="150px">
+			</iframe>
+			<div slot="footer" class="dialog-footer">
+				<el-button  @click="formInfo.formShow=false">取 消</el-button>
+				<el-button  type="primary" @click="testPush()">测试推送</el-button>
+
+			</div>
+		</el-dialog>
+	</div>
+	
+	
+</html> 
+
+
+

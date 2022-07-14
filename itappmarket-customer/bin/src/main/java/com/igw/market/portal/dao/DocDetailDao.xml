@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.igw.market.portal.dao.DocDetailDao">
+
+    
+    <select id="getPortalNews" parameterType="java.util.Map" resultType="com.igw.market.portal.domain.OaDocDetail"> 
+      		   <![CDATA[  
+      		SELECT a.pk_id as id,
+			       a.docsubject,
+			       a.doccontent,
+			       to_char(a.doccreatedate,'YYYY-MM-dd') doccreatedate,
+			       a.lastname,
+			       a.filevideo,
+			       a.fileimg
+			  FROM portal_news a
+			 WHERE a.valid_flag = '0'
+			  ]]>
+			  <if test="newsType != null and newsType != '' ">
+			   and a.new_type = #{newsType }
+			  </if>
+			  
+			  <if test="id != null and id != '' ">
+			   and a.pk_id = #{id }
+			  </if>
+    </select>
+    
+    
+    
+</mapper>  

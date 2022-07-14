@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>      
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>客户服务系统</title>
+	<script type="text/javascript" src="/static/views/js/commonCss.js"></script>
+    <script type="text/javascript" src="/static/views/js/commonJs.js"></script>
+	<script src="/static/views/js/home/home.js"></script> 
+	<link rel="shortcut icon" href="/static/views/igw/imgs/favicon.ico" />
+	<style type="text/css">
+	   .li_style{
+	      list-style-type:none;
+	   }
+	   .ace-nav>li>a {
+          background-color: #409EFF;
+       }
+       .ace-nav>li>a:hover, .ace-nav>li>a:focus {
+		  background-color: #62a8d1;
+	   }
+       .ace-nav>li.open>a {
+		    background-color:#F56C6C !important;
+	   }
+	   .active>a{
+	      background-color:#F56C6C !important;
+	   } 
+	   
+	   .dropdown-menu2 {
+	      min-width: 128px;
+	      border: 0px solid #ccc;
+	      background-color: #409EFF;
+	   }
+	   .dropdown-menu2>li>a {
+	      color: #FFF;
+	   }
+	   
+	</style>
+</head>
+<body>
+<div id="homeDiv">
+	<!-- 导航栏 -->
+	<div class="navbar navbar-default" id="navbar">
+		<!-- <script type="text/javascript">
+			
+		</script> -->
+		<div class="navbar-container" >
+			<!-- 导航栏头部-左侧 -->
+			<div class="navbar-header pull-left" style="width:300px;">
+				<!-- 标题 -->
+				<a href="" class="navbar-brand"> 
+				  <small> 
+				     <!-- <img src="/static/views/igw/imgs/logowhite.png" style="width: 24px;height: 24px;"></img> -->
+				    <i class="icon-leaf"></i>{{systemName}}
+				</small>
+				</a>
+			</div>
+
+			<!--菜单导航  -->
+			<template>
+				<div class="navbar-header pull-left" v-for="(item,index) in roleMenuList" :key="index">
+				    <ul class="nav ace-nav"  style="border-right:1px solid white;">
+				       <span v-if="index==0" ></span>
+				       <li class="blue index5"   style="width: 128px;">
+							<a data-toggle="dropdown"  @click="operate(item,index)" class="dropdown-toggle" >
+	                           <i class="icon-tasks"></i>{{item.title}}
+							</a>
+							<ul v-if="item.data.length!=0" class="dropdown-menu dropdown-menu2 submenu" tyle="width: 128px;">
+							    <li class="li_style" :id="index+''+index2" v-for="(item2,index2) in item.data" >
+								    <a href="javascript:void(0)" @click="urlClick(index,item2,index2)" >
+								    <i class="icon-double-angle-right"> </i>{{item2.title}}</a>
+							    </li>
+							</ul>
+	                   </li>
+				    </ul> 
+				</div> 
+			</template>
+			
+			<!-- 导航栏头部- -->
+			<div class="navbar-header pull-right" style="height:45px" role="navigation">
+				<ul class="nav ace-nav">
+					<li class="white">
+						<h5 style='margin-right:10px;margin-top:15px'>系统时间：{{sysDate}}</h5>
+					</li>
+					<!-- 用户信息 -->
+					<li class="light-blue"><a data-toggle="dropdown" href="#"
+						class="dropdown-toggle"> <img class="nav-user-photo"
+							src="/static/views/assets/avatars/user.jpg" alt="Jason's Photo" /> <span
+							class="user-info"> <small>Welcome,</small> {{cuserName}}
+						</span> <i class="icon-caret-down"></i>
+					</a>
+						<ul
+							class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+							<li><a @click="pwdClick"> <i class="icon-cog"></i>修改密码
+							</a></li>
+							<li class="divider"></li>
+							<li><a @click="logout"> <i class="icon-off"></i>登出
+							</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="main-container" id="main-container">
+		<!-- <script type="text/javascript">
+			try {
+				ace.settings.check('main-container', 'fixed')
+			} catch (e) {
+			}
+		</script> -->
+
+		<div class="main-container-inner">
+			<!-- 页面主体 -->
+				<iframe id="iframeMain" width="100%" name="iframeMain"
+				align="middle" marginheight="0" marginwidth="0" frameBorder=0
+				style='overflow: hidden;height:890px;'>
+			</iframe>
+			
+			<!-- 悬浮工具栏 -->
+			<div class="ace-settings-container" id="ace-settings-container">
+				<div class="btn btn-app btn-xs btn-warning ace-settings-btn"
+					id="ace-settings-btn">
+					<i class="icon-cog bigger-150"></i>
+				</div>
+				<div class="ace-settings-box" id="ace-settings-box" style="">
+					<div>
+						<div class="pull-left">
+							<select id="skin-colorpicker" class="hide">
+								<option data-skin="default" value="#438EB9">#438EB9</option>
+								<option data-skin="skin-1" value="#222A2D">#222A2D</option>
+								<option data-skin="skin-2" value="#C6487E">#C6487E</option>
+								<option data-skin="skin-3" value="#D0D0D0">#D0D0D0</option>
+							</select>
+						</div>
+						<span>&nbsp; Choose Skin</span>
+					</div>
+					<div>
+						<input type="checkbox" class="ace ace-checkbox-2"
+							id="ace-settings-add-container" /> <label class="lbl"
+							for="ace-settings-add-container"> Inside <b>.container</b>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>	
+</body>
+</html>
