@@ -1,0 +1,38 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.9'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.igwfmc.customer'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	maven { url 'https://nexus.igwfmc.com/repository/IGW-mavenCentral/' }
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'mysql:mysql-connector-java'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// https://mvnrepository.com/artifact/com.baomidou/mybatis-plus
+	implementation group: 'com.baomidou', name: 'mybatis-plus', version: '3.5.2'
+	// https://mvnrepository.com/artifact/cn.hutool/hutool-all
+	implementation group: 'cn.hutool', name: 'hutool-all', version: '5.8.4'
+// https://mvnrepository.com/artifact/com.github.xiaoymin/knife4j-spring-boot-starter
+	implementation group: 'com.github.xiaoymin', name: 'knife4j-spring-boot-starter', version: '3.0.3'
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
